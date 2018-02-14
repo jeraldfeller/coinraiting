@@ -1,0 +1,509 @@
+.trade_modal {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    overflow: scroll;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 30px;
+    top: 0px;
+    bottom: 0px;
+    z-index: 3000;
+}
+
+.trade_modal_widget {
+    display: inline-block;
+    background: white;
+    border: 1px solid black;
+    border-radius: 4px;
+    box-shadow: 0px 3px 9px 2px rgba(0, 0, 0, 0.5);
+    width: 600px;
+}
+
+.trade_modal_shift_complete {
+    font-size: 30px;
+    font-weight: 500;
+    width: 100%;
+    text-align: center;
+    margin-top: 36px;
+    margin-bottom: 10px;
+}
+
+.trade_modal_shift_output {
+    font-size: 14px;
+    margin-top: 4px;
+    margin-bottom: 10px;
+    text-align: center;
+    width: 100%;
+}
+
+.trade_modal_social_buttons {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.trade_modal_social_button {
+    border-radius: 4px;
+    width: 40px;
+    height: 34px;
+    padding: 10px;
+    display: inline-block;
+    margin: 3px;
+    text-align: center;
+}
+
+.trade_modal_conversion_rate {
+    font-size: 14px;
+    color: white;
+    line-height: 40px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .09);
+    background: rgb(107, 156, 52);
+    border-bottom: 1px solid rgb(91, 134, 44);
+    text-align: center;
+}
+
+.trade_modal_deposit_limits {
+    height: 75px;
+    font-size: 14px;
+    color: white;
+    background-color: rgb(119, 173, 59);
+    padding: 12px 0px;
+    border-top: 1px solid rgb(126, 174, 74);
+}
+
+.trade_modal_deposit_data {
+    width: 198px;
+    display: inline-block;
+}
+
+.trade_modal_deposit_data_name {
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 2px 0px 8px 0px;
+}
+
+.trade_modal_deposit_data_value {
+    margin: 8px 0px 2px 0px;
+}
+
+.trade_modal_shift_state {
+    background: rgb(52, 72, 79);
+}
+
+.trade_modal_shift_state_info {
+    position: relative;
+    width: 164px;
+    background-color: white;
+    height: 86px;
+    display: inline-block;
+    padding: 10px;
+    font-weight: 700;
+    margin: 15px;
+    border-radius: 5px;
+    text-align: center;
+    overflow: hidden;
+    font-size: 14px;
+}
+
+.trade_modal_shift_state_refresh_outer {
+    position: absolute;
+    width: 72px;
+    height: 72px;
+    right: -36px;
+    top: -36px;
+    background: #F4AB21;
+    border-radius: 36px;
+}
+
+.trade_modal_shift_state_refresh_inner {
+    position: absolute;
+    top: 44px;
+    left: 18px;
+    font-size: 14px;
+    color: white;
+}
+
+.trade_modal_shift_state_refresh_icon {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+.trade_modal_shift_state_refresh_name {
+    margin-bottom: 5px;
+}
+
+.pay_widget {
+    color: white;
+    margin: 8px 16px 32px 16px;
+    position: relative;
+    display: inline-block;
+
+}
+
+.pay_widget_name {
+    padding: 8px;
+    direction: ltr;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.trade_modal_whitespace_line {
+    width: 100%;
+    margin: 6px 0px;
+    text-align: left;
+}
+
+.trade_modal_whitespace_container {
+    text-align: left;
+    padding: 16px;
+}
+
+.trade_modal_whitespace_qrcode_location {
+    display: inline-block;
+    vertical-align: top;
+    background: rgb(200, 200, 200);
+    margin-right: 32px;
+    margin-bottom: 16px;
+    width: 166px;
+    height: 166px;
+}
+
+.trade_modal_whitespace_lines {
+    vertical-align: top;
+    font-size: 14px;
+    display: inline-block;
+}
+
+.trade_modal_whitespace_field_container {
+    display: inline-block;
+    padding: 5px 10px;
+}
+
+.trade_modal_whitespace_field_title {
+    font-weight: 700;
+    font-size: 14px;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+.trade_modal_whitespace_field_name {
+    padding: 6px 12px;
+    font-size: 14px;
+    color: #555;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    width: 100%;
+}
+
+.trade_modal_whitespace_fields {
+    padding: 10px 10px 20px 10px;
+    background: white;
+}
+
+.trade_modal_bottom_container {
+    height: 80px;
+    padding: 20px;
+    text-align: right;
+    border-top: 1px solid #e5e5e5;
+}
+
+.trade_modal_bottom_sponsor {
+    padding-left: 8px;
+    padding-bottom: 4px;
+    width: 50%;
+    font-size: 14px;
+    display: inline-block;
+    text-align: left;
+    vertical-align: bottom;
+}
+
+.trade_modal_bottom_buttons {
+    width: 50%;
+    display: inline-block;
+    text-align: right;
+}
+
+.trade_modal_bottom_close_button {
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 6px;
+    height: 36px;
+    display: inline-block;
+    padding: 10px;
+    vertical-align: top;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid rgb(204, 204, 204);
+}
+
+.trade_modal_bottom_shift_button {
+    display: inline-block;
+    margin: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 10px;
+    width: 90px;
+    height: 36px;
+    vertical-align: top;
+    font-size: 14px;
+    text-align: center;
+    background: #78ab41;
+    color: white;
+}
+
+.select_coin_button {
+    border: 1px solid black;
+    background: white;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 266px;
+    height: 48px;
+    line-height: 36px;
+    direction: ltr;
+    padding: 4px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    color: black;
+    cursor: pointer;
+    text-align: left;
+    padding-left: 30%;
+}
+
+.select_coin_button:hover {
+    border: 1px solid rgb(173, 173, 173);
+    background: rgb(235, 235, 235);
+}
+
+.select_coin_button_arrow {
+    font-size: 13px;
+    padding: 4px;
+}
+
+.select_coin_button_specific {
+    background: white;
+    display: inline-block;
+    cursor: pointer;
+    line-height: 52px;
+    color: black;
+    width: 33.3%;
+    text-align: center;
+}
+
+.select_coin_button_specific2 {
+    background: white;
+    display: inline-block;
+    cursor: pointer;
+    line-height: 52px;
+    color: black;
+    width: 55.3%;
+}
+
+.select_coin_button_specific:hover {
+    background: rgb(245, 245, 245);
+}
+
+.select_coin_button_window {
+    position: absolute;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    direction: ltr;
+    box-shadow: 0px 1px 8px 0px rgba(0, 0, 0, 0.17);
+    width: 400px;
+    left: 0;
+}
+
+.select_coin_window_text_container{
+    position: absolute;
+    bottom: 10%;
+    margin-left: 5%;
+}
+
+.current_selected_coin_img{
+    margin-top: 3%;
+}
+
+
+@media (max-width:812px) {
+
+}
+@media (max-width:736px) {
+
+}
+@media (max-width:667px) {
+
+}
+
+@media (max-width:640px) {
+
+}
+
+@media (max-width: 412px) {
+    .trade_modal_widget {
+        width: 100%;
+    }
+
+    .trade_modal_deposit_data {
+        width: 33%;
+        display: inline-block;
+    }
+    .trade_modal_deposit_limits{
+        font-size: 12px;
+        word-wrap: break-word;
+    }
+
+    .pay_widget{
+        width: 35%;
+    }
+
+    .select_coin_button{
+        width: 100%;
+        padding-left: 15%;
+    }
+
+    .select_coin_button_window{
+        width: 241%;
+    }
+
+    .select_coin_button_window_buy{
+        position: absolute;
+        left: -148px;
+    }
+
+    .trade_modal_whitespace_field_container{
+        width: 100% !important;
+    }
+
+    .trade_modal_bottom_container{
+        height: auto;
+    }
+}
+
+@media (max-width:414px) {
+    .trade_modal_widget {
+        width: 100%;
+    }
+
+    .trade_modal_deposit_data {
+        width: 33%;
+        display: inline-block;
+    }
+    .trade_modal_deposit_limits{
+        font-size: 12px;
+        word-wrap: break-word;
+    }
+
+    .pay_widget{
+        width: 35%;
+    }
+
+    .select_coin_button{
+        width: 100%;
+        padding-left: 15%;
+    }
+
+    .select_coin_button_window{
+        width: 241%;
+    }
+
+    .select_coin_button_window_buy{
+        position: absolute;
+        left: -148px;
+    }
+
+    .trade_modal_whitespace_field_container{
+        width: 100% !important;
+    }
+
+    .trade_modal_bottom_container{
+        height: auto;
+    }
+}
+
+@media (max-width:375px) {
+    .trade_modal_widget {
+        width: 100%;
+    }
+
+    .trade_modal_deposit_data {
+        width: 33%;
+        display: inline-block;
+    }
+    .trade_modal_deposit_limits{
+        font-size: 12px;
+        word-wrap: break-word;
+    }
+
+    .pay_widget{
+        width: 35%;
+    }
+
+    .select_coin_button{
+        width: 100%;
+        padding-left: 15%;
+    }
+
+    .select_coin_button_window{
+        width: 241%;
+    }
+
+    .select_coin_button_window_buy{
+        position: absolute;
+        left: -148px;
+    }
+
+    .trade_modal_whitespace_field_container{
+        width: 100% !important;
+    }
+
+    .trade_modal_bottom_container{
+        height: auto;
+    }
+}
+
+@media (max-width:360px) {
+    .trade_modal_widget {
+        width: 100%;
+    }
+
+    .trade_modal_deposit_data {
+        width: 33%;
+        display: inline-block;
+    }
+    .trade_modal_deposit_limits{
+        font-size: 12px;
+        word-wrap: break-word;
+    }
+
+    .pay_widget{
+        width: 35%;
+    }
+
+    .select_coin_button{
+        width: 100%;
+        padding-left: 15%;
+    }
+
+    .select_coin_button_window{
+        width: 241%;
+    }
+
+    .select_coin_button_window_buy{
+        position: absolute;
+        left: -148px;
+    }
+
+    .trade_modal_whitespace_field_container{
+        width: 100% !important;
+    }
+
+    .trade_modal_bottom_container{
+        height: auto;
+    }
+
+}
+

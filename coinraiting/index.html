@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><title>Coinranking - Cryptocurrency prices</title>
+    <link rel="canonical" href="https://coinrating.com">
+
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/spritesheet.css?v=1_6_4">
+    <link rel="stylesheet" type="text/css" href="css/main.css?v=182">
+    <link rel="stylesheet" type="text/css" href="css/trademodal.css?v=180">
+    <link rel="stylesheet" type="text/css" href="css/loader.css?v=176">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="MobileOptimized" content="width">
+    <meta name="format-detection" content="telephone=no">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/qrcode/qrcode.js"></script>
+    <style>
+        .down {
+            color: #ff6060;
+        }
+        .up {
+            color: #3cd483;
+        }
+        .coin_pump_now {
+            color: green;
+            background-color: rgb(234, 255, 234);
+        }
+
+        .coin_dump_now {
+            color: red;
+            background-color: rgb(255, 234, 234);
+        }
+        .coin-list__body__row{
+            -webkit-transition: all 0.5s ease;
+            -moz-transition: all 0.5s ease;
+            -o-transition: all 0.5s ease;
+            transition: all 0.5s ease;
+        }
+    </style>
+</head>
+<body class="frame">
+<!-- modal -->
+<div class="trade_modal" style="display: none;">
+    <div class="trade_modal_widget">
+        <div style="display: none;" class="trade_modal_complete">
+            <div class="trade_modal_shift_complete">Shift Complete!</div>
+            <div></div>
+            <div class="trade_modal_social_buttons">
+                <div class="trade_modal_social_button" style="background: rgb(86, 192, 224);"><a href="https://www.facebook.com/coinrating" target="_blank"><span class="social_icon fa fa-facebook"></span></a></div>
+                <div class="trade_modal_social_button" style="background: rgb(88, 185, 87);"><a href="https://twitter.com/coinrating" target="_blank"><span class="social_icon fa fa-twitter"></span></a></div>
+            </div>
+            <div class="col-md-12 pull-right">
+                <div class="close_button trade_modal_bottom_close_button">Close</div>
+            </div>
+        </div>
+        <div class="trade_modal_exchange_container" style="display: block;">
+            <div class="trade_modal_conversion_rate" style="display: block;">Getting Market Data <i class="fa fa-circle-o-notch fa-spin"></i></div>
+            <div class="trade_modal_deposit_limits" style="display: block;">
+                <div class="trade_modal_deposit_data" style="border-right: 1px solid rgb(146, 189, 98);"><div class="trade_modal_deposit_data_name">Deposit Min</div><div class="trade_modal_deposit_data_value"><span class="trade_modal_deposit_data_value_min_amount"></span> <span class="trade_modal_deposit_data_value_min_coin"></span></div></div><div class="trade_modal_deposit_data" style="border-right: 1px solid rgb(146, 189, 98);"><div class="trade_modal_deposit_data_name">Deposit Max</div><div class="trade_modal_deposit_data_value"><span class="trade_modal_deposit_data_value_max_amount"></span> <span class="trade_modal_deposit_data_value_max_coin"></span></div></div><div class="trade_modal_deposit_data"><div class="trade_modal_deposit_data_name">Miner Fee</div><div class="trade_modal_deposit_data_value"><span class="trade_modal_deposit_data_value_fee_amount"></span> <span class="trade_modal_deposit_data_value_fee_coin"></span></div></div>
+            </div>
+            <div class="trade_modal_shift_state" style="display: block;">
+                <div>
+                    <div class="pay_widget" style="direction: ltr; float: left;">
+                        <div class="pay_widget_name">Pay With</div>
+                        <div class="select_coin_button" data-name="Bitcoin" data-action="pay"><img class="coin_icon current_selected_coin_img" src="https://shapeshift.io/images/coins-sm/bitcoin.png">
+                            <span class="select_coin_window_text_container">
+                        <span class="select_coin_window_text">BTC</span>
+                        <span class="select_coin_button_arrow">▾</span>
+                        </span>
+                            <div class="select_coin_button_window select_coin_button_window_pay" style="display: none;">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pay_widget" style="direction: ltr;">
+                        <div class="pay_widget_name">Buy</div>
+                        <div class="select_coin_button" data-name="Ether" data-action="buy"><img class="coin_icon current_selected_coin_img" src="https://shapeshift.io/images/coins-sm/ether.png">
+                            <span class="select_coin_window_text_container">
+                        <span class="select_coin_window_text">ETH</span>
+                        <span class="select_coin_button_arrow">▾</span>
+                        </span>
+                            <div class="select_coin_button_window select_coin_button_window_buy" style="display: none;">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="trade_modal_whitespace_fields">
+                <div><div class="trade_modal_whitespace_field_container" style="width: 66%;"><div class="trade_modal_whitespace_field_title trade_buy_address">ETC Address</div><input class="trade_modal_whitespace_field_name pay_address_input"></div><div class="trade_modal_whitespace_field_container" style="width: 34%;"><div class="trade_modal_whitespace_field_title trade_buy_amount">ETC Amount (optional)</div><input class="trade_modal_whitespace_field_name pay_amount_input" onkeypress="return isNumberKey(event)"></div><div class="trade_modal_whitespace_field_container" style="width: 100%;"><div class="trade_modal_whitespace_field_title">Refund Address (optional)</div><input class="trade_modal_whitespace_field_name pay_refund_address_input"></div></div>
+            </div>
+            <div class="trade_modal_bottom_container">
+                <div class="trade_modal_bottom_sponsor">
+                    Powered by<a href="https://shapeshift.io/" target="_blank"> ShapeShift</a><img class="shapeshift_icon" src="//coincap.io/ss_favicon.ico"></div><div class="trade_modal_bottom_buttons"><div class="close_button trade_modal_bottom_close_button">Close</div><div class="trade_modal_bottom_shift_button">Buy ETC</div>
+            </div>
+            </div>
+        </div>
+
+        <div class="trade_modal_status" style="display: none; margin-top: 10px;">
+            <div clas="row">
+                <div class="col-md-12">
+                    <h2 class="trade_status_header"></h2>
+                    <h5>to address below to proceed</h5>
+                </div>
+                <div class="col-md-12 trade_modal_status_details">
+                    <div class="col-md-12 trade_modal_status_left text-left">
+                        <div class="col-md-12">
+                            <span class="trade_modal_status_details_title">AMOUNT</span>
+                            <span class="trade_modal_status_details_icon">
+                                <img class="coin_icon trade_modal_status_details_icon">
+                            </span>
+                            <span class="trade_modal_status_details_amount"></span>
+                            <span class="trade_modal_status_details_symbol"></span>
+                        </div>
+                        <div class="col-md-12">
+                            <span class="trade_modal_status_details_title">TO ADDRESS</span>
+                            <span class="trade_modal_status_details_address"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-12 text-center">
+                        <div id="qrcode"></div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <h6>Approximately <span class="trade_modal_status_details_amount_send"></span> will be sent to your wallet</h6>
+                    <p>Depending on current exchange rate</p>
+                </div>
+                <hr>
+                <div class="col-md-12">
+                    <h4>Status: <span class="trade_modal_status_details_status"></span></h4>
+                    <p>Average exchange time is 5 - 30 minutes</p>
+                </div>
+                <div class="col-md-12 pull-right">
+                    <div class="close_button trade_modal_bottom_close_button">Close</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<!-- end modal -->
+<div class="splash-screen">
+    <div class="col-md-12 align-center">
+        <img class="logo__img_splash" src="img/600-CoinRating-Logo.png" alt="Coinrating"/>
+    </div>
+    <div class="col-md-12">
+        <div class="loader-container">
+            <span class="dot dot-one"></span>
+            <span class="dot dot-two"></span>
+            <span class="dot dot-three"></span>
+            <span class="dot dot-four"></span>
+        </div>
+    </div>
+
+</div>
+    <input type="hidden" id="isLoaded">
+    <input type="hidden" id="btcCoinValue">
+    <input type="hidden" id="ethCoinValue">
+    <div class="frame__row display-none">
+        <div class="header header--border-bottom">
+            <div class="logo-container">
+                <a class="logo" href="https://coinrating.com">
+                    <img class="logo__img" src="img/1000-CoinRating-Logo.png" alt="Coinrating"/>
+                </a>
+            </div>
+            <div class="announcement">
+                <img class="announcement__img" src="img/bolt.svg" width="9" height="15" alt="Announcement">
+                <div class="announcement__message">
+                    <p>
+                        <a href="https://twitter.com/coinrating" target="_blank" title="Follow us on twitter">Follow us on twitter</a>
+                    </p>
+                </div>
+            </div>
+            <div class="header__right">
+                <a class="exchange-button button button--green button--medium">
+                    <img class="exchange-button__img button__img" src="img/exchange.svg" width="10" height="13" alt="Coinraiting Instant Exchange"/>
+                    <span class="hide-on-l" style="color: #fff;">Exchange</span>
+                </a>
+                <div class="search-container search--field-hidden">
+                    <div class="search">
+                        <div class="search__container">
+                            <div class="search__container-item">
+                                <label class="search__label" for="search_field">
+                                    <svg class="search__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19 19" width="19" height="19">
+                                        <g fill="none" stroke-linecap="round" stroke-width="2" stroke-miterlimit="10">
+                                            <path d="m13 13l5 5"/>
+                                            <circle cx="8" cy="8" r="7"/>
+                                        </g>
+                                    </svg>
+                                </label>
+                            </div>
+                            <div class="search__container-item search__container-item--stretch">
+                                <input class="search__field" placeholder="Search coins" autocomplete="off" value="" id="search_field">
+                            </div>
+                            <div class="search__container-item">
+                                <button class="search__close">
+                                    <svg class="search__close-svg" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15">
+                                        <g fill="none" stroke-linecap="round" stroke-width="2" stroke-miterlimit="10" shape-rendering="crispEdges">
+                                            <path d="m1 14l13-13"/><path d="m1 1l13 13"/>
+                                        </g>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-container">
+                    <div class="nav">
+                        <input class="nav__toggle" id="menu-toggle" type="checkbox">
+                        <label for="menu-toggle" class="nav__hamburger">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="16" viewBox="0 0 20 16">
+                                <g fill="none" stroke-linecap="round" stroke-width="2" stroke-miterlimit="10">
+                                    <path d="m1 1h18"/><path d="m1 8h18"/><path d="m1 15h18"/>
+                                </g>
+                            </svg>
+                        </label>
+                        <div class="nav__menu">
+                            <div class="nav__content">
+                                <label for="menu-toggle" class="nav__cross">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15">
+                                        <g fill="none" stroke-linecap="round" stroke-width="2" stroke-miterlimit="10" shape-rendering="crispEdges"><path d="m1 14l13-13"/><path d="m1 1l13 13"/>
+                                        </g>
+                                    </svg>
+                                </label>
+                                <form method="post" action="">
+                                    <div class="nav__form-group">
+                                        <label class="nav__label" for="base_currency">Base currency</label>
+                                        <select name="base_currency" id="base_currency" class="nav__select" data-action="change-base-currency">
+                                            <option value="USD" selected="selected">USD - US dollar</option>
+                                            <option value="BTC">BTC - Bitcoin</option>
+                                            <option value="ETH">ETH - Ethereum</option>
+                                            <option value="EUR">EUR - Euro</option>
+                                            <option value="JPY">JPY - Japanese yen</option>
+                                            <option value="GBP">GBP - Pound sterling</option>
+                                            <option value="PLN">PLN - Polish zloty</option>
+                                            <option value="SEK">SEK - Swedish krona</option>
+                                            <option value="CHF">CHF - Swiss franc</option>
+                                            <option value="RUB">RUB - Russian rouble</option>
+                                            <option value="AUD">AUD - Australian dollar</option>
+                                            <option value="BRL">BRL - Brazilian real</option>
+                                            <option value="CAD">CAD - Canadian dollar</option>
+                                            <option value="CNY">CNY - Chinese yuan renminbi</option>
+                                            <option value="HKD">HKD - Hong Kong dollar</option>
+                                            <option value="INR">INR - Indian rupee</option>
+                                            <option value="MXN">MXN - Mexican peso</option>
+                                            <option value="PHP">PHP - Philippine peso</option>
+                                            <option value="SGD">SGD - Singapore dollar</option>
+                                            <option value="ZAR">ZAR - South African rand</option>
+                                        </select>
+                                    </div>
+
+                                </form>
+                                <form method="post" action="">
+                                    <div class="nav__form-group">
+                                        <label class="nav__label" for="base_currency">Language</label>
+                                        <select name="base_language" id="base_language" class="nav__select">
+                                            <option value="English" selected="selected">English</option>
+                                            <option value="简体中文">简体中文</option>
+                                            <option value="日本語">日本語</option>
+                                            <option value="한국어">한국어</option>
+                                            <option value="Tiếng Việt">Tiếng Việt</option>
+                                            <option value="Español">Español</option>
+                                            <option value="Brazil Português">Brazil Português</option>
+                                            <option value="Português">Português</option>
+                                            <option value="Deutsche">Deutsche</option>
+                                            <option value="Română">Română</option>
+                                            <option value="русский">русский</option>
+                                            <option value="Türk">Türk</option>
+                                            <option value="український">український</option>
+                                            <option value="Italiano">Italiano</option>
+                                            <option value="Nederlands">Nederlands</option>
+                                            <option value="Français">Français</option>
+                                            <option value="ελληνικά">ελληνικά</option>
+                                            <option value="हिंदी">हिंदी</option>
+                                            <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                                            <option value="Dansk">Dansk</option>
+                                            <option value="العربية">العربية</option>
+                                        </select>
+                                    </div>
+
+                                </form>
+
+                                <ul class="nav__list">
+                                    <li class="nav__item">
+                                        <a class="nav__link" href="https://coinhodler.io" target="_blank">
+                                            <img class="nav__img" src="https://coinranking.com/static/img/coinhodler.svg" width="21" height="21" alt="Coinhodler"/>
+                                            Coinhodler Portfolio
+                                        </a>
+                                        <a class="nav__link" href="https://www.coinbase.com/join/5362ad122fce19902a000007" target="_blank">
+                                            <img class="nav__img nav__img--coinbase" src="https://coinranking.com/static/img/coinbase.svg" width="18" height="18" alt="Coinbase"/>
+                                            Buy coins with USD
+                                        </a>
+                                    </li>
+                                </ul>
+
+                            </div>
+                            <div class="nav__footer">
+                                <a class="nav__button button button--green button--full button--medium" href="https://exchange.coinranking.com/">
+                                    <img class="button__img" src="https://coinranking.com/static/img/exchange.svg" width="10" height="13" alt="Coinranking Instant Exchange"/>
+                                    Exchange
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="frame__row frame__row--expand display-none">
+        <div class="coin-list">
+            <div class="coin-list__header">
+                <div class="wrapper">
+                    <div class="grid">
+                        <div class="grid__col grid__col--3-of-8 grid__col--m-4-of-12 grid__col--s-5-of-10 grid__col--am"><a class="coin-list__header__title" >Cryptocurrency</a></div><div class="grid__col grid__col--1-of-4 grid__col--m-3-of-12 grid__col--s-3-of-10 grid__col--am"><a class="coin-list__header__title" >Price</a></div><div class="grid__col grid__col--1-of-4 grid__col--m-3-of-12 grid__col--am hide-on-m"><a class="coin-list__header__title" >Market cap</a></div><div class="grid__col grid__col--1-of-8 grid__col--m-2-of-12 grid__col--s-2-of-10 grid__col--am"><div class="pull-right"><a class="coin-list__header__title" >24h change</a></div></div></div></div></div>
+
+
+            <div class="coin-list__body">
+
+            </div>
+            <div class="coin-list__footer">
+                <div class="wrapper">
+                    <div class="align-center">
+                        <div class="pagination">
+                            <a class="button button--disabled pagination__button pagination__button_prev">
+                                <img class="pagination__prev" src="img/prev.svg" width="8" height="13" alt="Previous page">
+                            </a>
+                            <span class="pagination__info"></b></span>
+                            <a class="button button--blue pagination__button pagination__button_next">
+                                <img class="pagination__next" src="img/next.svg" width="8" height="13" alt="Next page">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="coin-list-shadow"></div>
+    </div>
+    <div class="frame__row display-none">
+        <div class="footer-top">
+            <div class="footer-top__desktop">
+                <div id="bsap_1307595" class="bsarocks bsap_60b7caaeb65c0bd98d536d348d8a1ab6"></div>
+            </div>
+            <div class="footer-top__mobile">
+                <div id="bsap_1307711" class="bsarocks bsap_60b7caaeb65c0bd98d536d348d8a1ab6"></div>
+            </div></div><div class="global-information">
+        <div class="global-information__item">
+            <div class="global-information__block">
+                <h2 class="global-information__header">Total market cap</h2>
+                <div class="global-information__value">
+                    <span class="global-information__value-addon">$</span><span class="global-information__value-number total_market_cap"></span>
+                </div>
+            </div>
+        </div>
+        <div class="global-information__item">
+            <div class="global-information__block">
+                <h2 class="global-information__header">24h trade volume</h2>
+                <div class="global-information__value">
+                    <span class="global-information__value-addon">$</span><span class="global-information__value-number total_24h_volume"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="global-information__item">
+            <div class="global-information__block">
+                <h2 class="global-information__header">Number of coins</h2>
+                <div class="global-information__value">
+
+                    <span class="global-information__value-number total_coins_count"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="footer">
+            <div class="footer__left">
+                <a class="footer__contact" target="_blank" href="support@coinrating.com">Support</a>
+                <a class="footer__contact" target="_blank" href="support@coinrating.com">Advertise</a>
+                <a class="footer__contact" target="_blank" href="https://twitter.com/coinrating">Twitter</a>
+                <a class="footer__contact" target="_blank" href="Coinrating-Terms-and-Conditions.pdf">Terms & Conditions</a>
+            </div>
+            <div class="footer__right">
+                <a class="footer__back-to-top" data-action="coin-list--back-to-top" href="#">
+                    <svg class="footer__back-to-top__icon" xmlns="http://www.w3.org/2000/svg" width="14" height="8" viewBox="0 0 14 8">
+                        <path fill="none" stroke="#6f7483" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 7l6-6 6 6"/>
+                    </svg>
+                    Back to top
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
+
+<script type="text/javascript" src="js/index.js?v=1.0"></script>
+<script type="text/javascript" src="js/numerals.js"></script>
+<script type="text/javascript" src="js/sparkline.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        var getURLParameter = function (name) {
+            return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[undefined,""])[1].replace(/\+/g, '%20'))||null;
+        };
+        $requestUrl = 'http://coincap.io/front';
+        $requestInterval = 0;
+        $defaultViewCount = 5;
+        $start = 0;
+        $offset = 50;
+        $pageLimit = 50;
+        $page = getURLParameter('page');
+
+        $count = 0;
+        $('#base_currency').on('change', function(){
+           $currency = $(this).val();
+           $('.coin-list__body').find('a').each(function(index){
+               $price = parseFloat($(this).attr('data-price'));
+               $convertedPrice = $rates[$currency] * $price;
+               $convertedPrice = $convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 4});
+               $convertedVwapBtc = $rates[$currency] * $vwapData;
+               $convertedVwapBtc = $convertedVwapBtc.toLocaleString(undefined, {minimumFractionDigits: 4});
+               if($currency == 'USD'){
+                   $displayPrice = '$'+$convertedPrice;
+                   $displayVwapBtc = '$'+$convertedVwapBtc;
+               }else if($currency == 'BTC'){
+                   $bitCoinValue = parseFloat($('#btcCoinValue').val());
+                   $convertedPrice = $price / $bitCoinValue;
+                   $convertedVwapBtc = $vwapData / $bitCoinValue;
+                   $displayPrice = 'Ƀ'+$convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 4});
+                   $displayVwapBtc = 'Ƀ'+$convertedVwapBtc.toLocaleString(undefined, {minimumFractionDigits: 4});
+               }else if($currency == 'ETH'){
+                   $ethCoinValue = parseFloat($('#ethCoinValue').val());
+                   $convertedPrice = $price / $ethCoinValue;
+                   $convertedVwapBtc = $vwapData / $ethCoinValue;
+                   $displayPrice = 'Ξ'+$convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 4});
+                   $displayVwapBtc = 'Ξ'+$convertedVwapBtc.toLocaleString(undefined, {minimumFractionDigits: 4});
+               }else{
+                   $displayPrice = $convertedPrice + ' ' + $currency;
+                   $displayVwapBtc = $convertedVwapBtc + ' ' + $currency;;
+               }
+
+               $(this).find('.coin-list__body__row__price__value').text($displayPrice);
+           })
+        });
+
+        $('#base_language').on('change', function(){
+            $language = $(this).val();
+
+            switch($language){
+                case 'English':
+                    $cryptocurrency = 'Cryptocurrency';
+                    $price = 'Price';
+                    $marketCap = 'Market Cap';
+                    $24hChange = '24H Change';
+                    $totalMarketCap = 'Total Market Cap';
+                    $24hTradeVolume = '24H Trade Volume';
+                    $numberOfCoins = 'Number Of Coins';
+                    $backToTop = 'Back To Top';
+                    break;
+                case '简体中文':
+                    $cryptocurrency = '加密货币';
+                    $price = '价钱';
+                    $marketCap = '市值';
+                    $24hChange = '24H变化';
+                    $totalMarketCap = '总市值';
+                    $24hTradeVolume = '24H交易量';
+                    $numberOfCoins = '硬币数量';
+                    $backToTop = '回到顶部';
+                    break;
+                case '日本語':
+                    $cryptocurrency = '暗号化性';
+                    $price = '価格';
+                    $marketCap = '時価総額';
+                    $24hChange = '24時間の変更';
+                    $totalMarketCap = 'トータルマーケットキャップ';
+                    $24hTradeVolume = '24時間の取引量';
+                    $numberOfCoins = 'コインの数';
+                    $backToTop = 'トップに戻る';
+                    break;
+                case '한국어':
+                    $cryptocurrency = '암호 해독 성';
+                    $price = '가격';
+                    $marketCap = '시가 총액';
+                    $24hChange = '24 시간 변경';
+                    $totalMarketCap = '총 시가 총액';
+                    $24hTradeVolume = '24 시간 거래량';
+                    $numberOfCoins = '동전 수';
+                    $backToTop = '맨 위로';
+                    break;
+                case 'Tiếng Việt':
+                    $cryptocurrency = 'Đồng tiền Crypto';
+                    $price = 'Giá bán';
+                    $marketCap = 'Vốn hóa thị trường';
+                    $24hChange = '24H Thay đổi';
+                    $totalMarketCap = 'Tổng giá trị vốn hóa thị trường';
+                    $24hTradeVolume = '24 giờ thương mại';
+                    $numberOfCoins = 'Số Tiền xu';
+                    $backToTop = 'Trở lại đầu trang';
+                    break;
+                case 'Español':
+                    $cryptocurrency = 'Criptomoneda';
+                    $price = 'Precio';
+                    $marketCap = 'Tapa del mercado';
+                    $24hChange = '24H cambio';
+                    $totalMarketCap = 'Total Market Cap';
+                    $24hTradeVolume = 'Volumen comercial 24H';
+                    $numberOfCoins = 'Cantidad de monedas';
+                    $backToTop = 'Volver arriba';
+                    break;
+                case 'Brazil Português':
+                    $cryptocurrency = 'Moeda Crypto';
+                    $price = 'Preço';
+                    $marketCap = 'Valor de mercado';
+                    $24hChange = 'Mudança 24H';
+                    $totalMarketCap = 'Tampão de mercado total';
+                    $24hTradeVolume = '24H Volume comercial';
+                    $numberOfCoins = 'Número de moedas';
+                    $backToTop = 'De volta ao topo';
+                    break;
+                case 'Português':
+                    $cryptocurrency = 'Moeda Crypto';
+                    $price = 'Preço';
+                    $marketCap = 'Valor de mercado';
+                    $24hChange = 'Mudança 24H';
+                    $totalMarketCap = 'Tampão de mercado total';
+                    $24hTradeVolume = '24H Volume comercial';
+                    $numberOfCoins = 'Número de moedas';
+                    $backToTop = 'De volta ao topo';
+                    break;
+                case 'Deutsche':
+                    $cryptocurrency = 'Kryptowährung';
+                    $price = 'Preis';
+                    $marketCap = 'Marktkapitalisierung';
+                    $24hChange = '24 Stunden ändern';
+                    $totalMarketCap = 'Gesamtmarktkap';
+                    $24hTradeVolume = '24H Handelsvolumen';
+                    $numberOfCoins = 'Anzahl der Münzen';
+                    $backToTop = 'Zurück nach oben';
+                    break;
+                case 'Română':
+                    $cryptocurrency = 'Criptomonedă';
+                    $price = 'Preț';
+                    $marketCap = 'Capul pieței';
+                    $24hChange = 'Schimbarea 24H';
+                    $totalMarketCap = 'Capul total al pieței';
+                    $24hTradeVolume = '24H Volume Trade';
+                    $numberOfCoins = 'Numărul de monede';
+                    $backToTop = 'Inapoi sus';
+                    break;
+                case 'русский':
+                    $cryptocurrency = 'криптовалюта';
+                    $price = 'Цена';
+                    $marketCap = 'Рыночная капитализация';
+                    $24hChange = '24H Изменение';
+                    $totalMarketCap = 'Общая рыночная капитализация';
+                    $24hTradeVolume = 'Объём торговли 24 часа';
+                    $numberOfCoins = 'Количество монет';
+                    $backToTop = 'Вернуться к началу';
+                    break;
+                case 'Türk':
+                    $cryptocurrency = 'Kripto para birimi';
+                    $price = 'Fiyat';
+                    $marketCap = 'Piyasa değeri';
+                    $24hChange = '24H Değiştir';
+                    $totalMarketCap = 'Toplam Pazar Payı';
+                    $24hTradeVolume = '24H Ticaret Hacmi';
+                    $numberOfCoins = 'Paraların Sayıları';
+                    $backToTop = 'Başa dönüş';
+                    break;
+                case 'український':
+                    $cryptocurrency = 'Криптовалюта';
+                    $price = 'Ціна';
+                    $marketCap = 'Ринкова капіталізація';
+                    $24hChange = 'Зміна 24 год';
+                    $totalMarketCap = 'Загальний обсяг ринку';
+                    $24hTradeVolume = 'Обсяг торгів 24 год';
+                    $numberOfCoins = 'Кількість монет';
+                    $backToTop = 'Догори';
+                    break;
+                case 'Italiano':
+                    $cryptocurrency = 'criptovaluta';
+                    $price = 'Prezzo';
+                    $marketCap = 'Market Cap';
+                    $24hChange = 'Cambio 24 ore';
+                    $totalMarketCap = 'Total Market Cap';
+                    $24hTradeVolume = '24H Volume commerciale';
+                    $numberOfCoins = 'Numero di monete';
+                    $backToTop = 'Torna in cima';
+                    break;
+                case 'Nederlands':
+                    $cryptocurrency = 'cryptogeld';
+                    $price = 'Prijs';
+                    $marketCap = 'Marktkapitalisatie';
+                    $24hChange = '24 uur veranderen';
+                    $totalMarketCap = 'Totale marktkapitalisatie';
+                    $24hTradeVolume = '24 uur handelsvolume';
+                    $numberOfCoins = 'Aantal munten';
+                    $backToTop = 'Terug naar boven';
+                    break;
+                case 'Français':
+                    $cryptocurrency = 'Crypto-monnaie';
+                    $price = 'Prix';
+                    $marketCap = 'Capitalisation boursière';
+                    $24hChange = '24H Changement';
+                    $totalMarketCap = 'Capitalisation totale du marché';
+                    $24hTradeVolume = 'Volume de commerce 24H';
+                    $numberOfCoins = 'Nombre de pièces';
+                    $backToTop = 'Retour au sommet';
+                    break;
+                case 'ελληνικά':
+                    $cryptocurrency = 'Κρυπτογράφηση';
+                    $price = 'Τιμή';
+                    $marketCap = 'Cap Cap';
+                    $24hChange = '24H Αλλαγή';
+                    $totalMarketCap = 'Συνολικό Κεφάλαιο Αγοράς';
+                    $24hTradeVolume = '24Η όγκος συναλλαγών';
+                    $numberOfCoins = 'Αριθμός κερμάτων';
+                    $backToTop = 'Επιστροφή στην κορυφή';
+                    break;
+                case 'हिंदी':
+                    $cryptocurrency = 'क्रिप्टो मुद्रा';
+                    $price = 'मूल्य';
+                    $marketCap = 'बाज़ार आकार';
+                    $24hChange = '24 एच बदलें';
+                    $totalMarketCap = 'कुल मार्केट कैप';
+                    $24hTradeVolume = '24 एच व्यापार वॉल्यूम';
+                    $numberOfCoins = 'सिक्के की संख्या';
+                    $backToTop = 'शीर्ष पर वापस जाएँ';
+                    break;
+                case 'Bahasa Indonesia':
+                    $cryptocurrency = 'Mata uang kripto';
+                    $price = 'Harga';
+                    $marketCap = 'Cap Pasar';
+                    $24hChange = 'Perubahan 24H';
+                    $totalMarketCap = 'Total Market Cap';
+                    $24hTradeVolume = 'Volume Perdagangan 24H';
+                    $numberOfCoins = 'Jumlah Koin';
+                    $backToTop = 'Kembali ke atas';
+                    break;
+                case 'Dansk':
+                    $cryptocurrency = 'Crypto valuta';
+                    $price = 'Pris';
+                    $marketCap = 'Markedsværdi';
+                    $24hChange = '24H ændring';
+                    $totalMarketCap = 'Samlede markedsdækning';
+                    $24hTradeVolume = '24H Handelsvolumen';
+                    $numberOfCoins = 'Antal mønter';
+                    $backToTop = 'Tilbage til toppen';
+                    break;
+                case 'العربية':
+                    $cryptocurrency = 'عملة معماة';
+                    $price = 'السعر';
+                    $marketCap = 'كابيتال كاب';
+                    $24hChange = '24H تغيير';
+                    $totalMarketCap = 'إجمالي سقف السوق';
+                    $24hTradeVolume = 'حجم التداول 24H';
+                    $numberOfCoins = 'عدد القطع النقدية';
+                    $backToTop = 'عودة إلى الأعلى';
+                    break;
+            }
+
+            $('.coin-list__header__title:eq(0)').text($cryptocurrency);
+            $('.coin-list__header__title:eq(1)').text($price);
+            $('.coin-list__header__title:eq(2)').text($marketCap);
+            $('.coin-list__header__title:eq(3)').text($24hChange);
+
+            $('.global-information__header:eq(0)').text($totalMarketCap);
+            $('.global-information__header:eq(1)').text($24hTradeVolume);
+            $('.global-information__header:eq(2)').text($numberOfCoins);
+
+            $('.footer__back-to-top').text($backToTop);
+
+        });
+
+        getExchangeRate().done(function(response){
+
+            $rates = response.rates;
+            $.getJSON( "https://shapeshift.io/getcoins", function( data ) {
+                $coinOptions = '';
+                $.each(data, function(key, value){
+                    if(value.status == 'available'){
+                        $coinOptions += '<div class="select_coin_button_specific select_this_coin" data-name="'+value.name+'"><img class="coin_icon" src="'+value.imageSmall+'">'+value.symbol+'</div>'
+                    }
+                });
+
+               $('.select_coin_button_window').html($coinOptions);
+
+                $('.select_this_coin').on('click', function(){
+                    $selectCoin = $.trim($(this).text());
+                    $currentCoinPay = $.trim($('.select_coin_window_text:eq(0)').text());
+                    $currentCoinLogoPay = $('.current_selected_coin_img:eq(0)').attr('src');
+                    $currentCoinNamePay = $('.select_coin_button:eq(0)').attr('data-name');
+                    $currentCoinBuy = $.trim($('.select_coin_window_text:eq(1)').text());
+                    $currentCoinLogoBuy = $('.current_selected_coin_img:eq(1)').attr('src');
+                    $currentCoinNameBuy = $('.select_coin_button:eq(1)').attr('data-name');
+                    $selectImage = $(this).find('img').attr('src');
+                    $action =  $(this).parent().parent().attr('data-action');
+                    $coinName = $(this).attr('data-name');
+
+                    $('.trade_modal_deposit_data_value_min_amount').text('');
+                    $('.trade_modal_deposit_data_value_min_coin').text('');
+
+                    $('.trade_modal_deposit_data_value_max_amount').text('');
+                    $('.trade_modal_deposit_data_value_max_coin').text('');
+
+                    $('.trade_modal_deposit_data_value_fee_amount').text('');
+                    $('.trade_modal_deposit_data_value_fee_coin').text('');
+
+
+                    $('.trade_modal_conversion_rate').html('Getting Market Data <i class="fa fa-circle-o-notch fa-spin"></i>');
+
+
+                    if($action == 'buy'){
+                        if($selectCoin == $currentCoinPay){
+                            $('.select_coin_window_text:eq(1)').text($selectCoin);
+                            $('.current_selected_coin_img:eq(1)').attr('src', $currentCoinLogoPay);
+                            $('.select_coin_button:eq(1)').attr('data-name', $currentCoinNamePay);
+                            $('.select_coin_window_text:eq(0)').text($currentCoinBuy);
+                            $('.current_selected_coin_img:eq(0)').attr('src', $currentCoinLogoBuy);
+                            $('.select_coin_button:eq(0)').attr('data-name', $currentCoinNameBuy);
+                        }else{
+                            $(this).parent().parent().find('.current_selected_coin_img').attr('src', $selectImage);
+                            $(this).parent().parent().find('.select_coin_window_text').text($selectCoin);
+                            $(this).parent().parent().attr('data-name', $coinName);
+                        }
+
+                        $('.trade_modal_bottom_shift_button').text('Buy '+ $selectCoin);
+                        $('.trade_buy_address').text($selectCoin + ' Address');
+                        $('.trade_buy_amount').text($selectCoin + ' Amount (optional)');
+                    }else{
+                        if($selectCoin == $currentCoinBuy){
+                            $('.select_coin_window_text:eq(0)').text($selectCoin);
+                            $('.current_selected_coin_img:eq(0)').attr('src', $currentCoinLogoBuy);
+                            $('.select_coin_button:eq(0)').attr('data-name', $currentCoinNameBuy);
+                            $('.select_coin_window_text:eq(1)').text($currentCoinPay);
+                            $('.current_selected_coin_img:eq(1)').attr('src', $currentCoinLogoPay);
+                            $('.select_coin_button:eq(1)').attr('data-name', $currentCoinNamePay);
+
+
+                            $('.trade_modal_bottom_shift_button').text('Buy '+ $currentCoinPay);
+                            $('.trade_buy_address').text($currentCoinPay + ' Address');
+                            $('.trade_buy_amount').text($currentCoinPay + ' Amount (optional)');
+                        }else{
+                            $(this).parent().parent().find('.current_selected_coin_img').attr('src', $selectImage);
+                            $(this).parent().parent().find('.select_coin_window_text').text($selectCoin);
+                            $(this).parent().parent().attr('data-name', $coinName);
+                        }
+                    }
+
+
+                    $currentCoinPay = $.trim($('.select_coin_window_text:eq(0)').text());
+                    $currentCoinBuy = $.trim($('.select_coin_window_text:eq(1)').text());
+
+                    $.getJSON( "https://shapeshift.io/marketinfo/"+$currentCoinPay+"_"+$currentCoinBuy, function( data ) {
+                        $limit = data.limit;
+                        $maxLimit = data.maxLimit;
+                        $minimum = data.minimum;
+                        $minerFee = data.minerFee;
+                        $rate = data.rate;
+                        $pair = data.pair.split('_');
+                        $pay = $pair[0];
+                        $buy = $pair[1];
+
+                        $('.trade_modal_deposit_data_value_min_amount').text($minimum);
+                        $('.trade_modal_deposit_data_value_min_coin').text($pay);
+
+                        $('.trade_modal_deposit_data_value_max_amount').text($maxLimit);
+                        $('.trade_modal_deposit_data_value_max_coin').text($pay);
+
+                        $('.trade_modal_deposit_data_value_fee_amount').text($minerFee);
+                        $('.trade_modal_deposit_data_value_fee_coin').text($buy);
+
+
+                        $('.trade_modal_conversion_rate').text(1 + ' '+$pay+ ' = ' + $rate + ' ' + $buy);
+                    });
+
+                });
+
+                exec();
+            });
+            //Socket
+            // Socket
+            var socket = io.connect('http://socket.coincap.io');
+            socket.on('trades', function (tradeMsg) {
+                $.each(tradeMsg, function(){
+                    $long = tradeMsg.msg.long;
+                    $short = tradeMsg.msg.short;
+                    $mktcap = tradeMsg.msg.mktcap.toLocaleString(undefined, {minimumFractionDigits: 0});
+                    $price = tradeMsg.msg.price.toLocaleString(undefined, {minimumFractionDigits: 4});
+                    $rawPrice = tradeMsg.msg.price;
+                    $vwapData = tradeMsg.msg.vwapData.toLocaleString(undefined, {minimumFractionDigits: 4});
+                    $rawVwapDataBTC = tradeMsg.msg.vwapData;
+                    $vwapDataBTC = tradeMsg.msg.vwapDataBTC.toLocaleString(undefined, {minimumFractionDigits: 4});
+                    $supply = tradeMsg.msg.supply.toLocaleString(undefined, {minimumFractionDigits: 0});
+                    $usdVolumn = tradeMsg.msg.usdVolume.toLocaleString(undefined, {minimumFractionDigits: 0});
+                    $volume = tradeMsg.msg.volume.toLocaleString(undefined, {minimumFractionDigits: 0});
+                    $perc = tradeMsg.msg.perc;
+                    $iconName = $long.toLowerCase().replace(/ /g, '');
+                    if($perc >= 0){
+                        $percColor = 'style="color: rgb(108, 168, 46);"';
+                        $percClass = ' coin-list__body__row__change--positive';
+                        $arrowSource = 'img/arrow-up-green.svg';
+                        $arrowClass = ' coin-list__body__row__change__icon--up';
+                    }else{
+                        $percColor = 'style="color: rgb(206, 92, 92);"';
+
+                        $percClass = ' coin-list__body__row__change--negative';
+                        $arrowSource = 'img/arrow-down-red.svg';
+                        $arrowClass = ' coin-list__body__row__change__icon--down';
+                    }
+
+                    if($long == 'Bitcoin'){
+                        $('#btcCoinValue').val(tradeMsg.msg.price);
+                    }
+                    if($long == 'Ethereum'){
+                        $('#ethCoinValue').val(tradeMsg.msg.price);
+                    }
+
+                    $row = $('[data-coin="'+$long+'"]');
+                    $rowCoin = $row.attr('data-coin');
+                    $rowPrice = parseFloat($row.attr('data-price'));
+
+
+                    $currency = $('#base_currency').val();
+
+                    $convertedPrice = $rates[$currency] * $rawPrice;
+                    if($short == 'BTC' || $short == 'BCH'){
+                        $convertedPrice = $convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 2});
+                    }else{
+                        $convertedPrice = $convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 4});
+                    }
+                    $convertedVwapBtc = $rates[$currency] * $rawVwapDataBTC;
+                    $convertedVwapBtc = $convertedVwapBtc.toLocaleString(undefined, {minimumFractionDigits: 4});
+
+
+                    if($currency == 'USD'){
+                        $displayPrice = '$'+$convertedPrice;
+                        $displayVwapBtc = '$'+$convertedVwapBtc;
+                    }else if($currency == 'BTC'){
+                        $bitCoinValue = parseFloat($('#btcCoinValue').val());
+                        $convertedPrice = $rawPrice / $bitCoinValue;
+                        $convertedVwapBtc = $rawVwapDataBTC / $bitCoinValue;
+                        if($short == 'BTC' || $short == 'BCH'){
+                            $displayPrice = 'Ƀ'+$convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 2});
+                        }else{
+                            $displayPrice = 'Ƀ'+$convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 4});
+                        }
+
+                        $displayVwapBtc = 'Ƀ'+$convertedVwapBtc.toLocaleString(undefined, {minimumFractionDigits: 4});
+
+                    }else if($currency == 'ETH'){
+                        $ethCoinValue = parseFloat($('#ethCoinValue').val());
+                        $convertedPrice = $rawPrice / $ethCoinValue;
+                        $convertedVwapBtc = $rawVwapDataBTC / $ethCoinValue;
+                        if($short == 'BTC' || $short == 'BCH'){
+                            $displayPrice = 'Ξ'+$convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 2});
+                        }else{
+                            $displayPrice = 'Ξ'+$convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 4});
+                        }
+
+                        $displayVwapBtc = 'Ξ'+$convertedVwapBtc.toLocaleString(undefined, {minimumFractionDigits: 4});
+
+                    }else{
+                        $displayPrice = $convertedPrice + ' ' + $currency;
+                        $displayVwapBtc = $convertedVwapBtc + ' ' + $currency;
+
+                    }
+
+
+
+
+                    if($rawPrice > $rowPrice){
+
+                        $row.find('.coin-list__body__row__price__value').removeClass('down').addClass('up').text($displayPrice);
+                        $row.removeClass('coin_dump_now').addClass('coin_pump_now');
+                        //$row.removeClass('coin_pump_now');
+
+
+                    }else if($rawPrice < $rowPrice){
+                        $row.removeClass('coin_pump_now').addClass('coin_dump_now');
+                        //$row.removeClass('coin_dump_now');
+                        $row.find('.coin-list__body__row__price__value').removeClass('up').addClass('down').text($displayPrice);
+                    }
+
+                    $row.attr('data-price', tradeMsg.msg.price);
+                    $row.find('.coin-list__body__row__market-cap__value').text('$'+$mktcap);
+                    $row.find('.coin-list__body__row__change').removeClass('coin-list__body__row__change--negative').removeClass('coin-list__body__row__change--positive').addClass($percClass).html(
+                        $perc+'%' +
+                        '<img class="coin-list__body__row__change__icon '+$arrowClass+'" src="'+$arrowSource+'" width="5" height="7" alt="">'
+                    );
+                });
+
+            })
+        })
+
+
+
+        function exec(){
+            if($requestInterval == 12 || $requestInterval == 0){
+                $requestUrl = 'http://coincap.io/global';
+            }else{
+                $requestUrl = 'http://coincap.io/front';
+                $requestInterval = 1;
+            }
+            getFront($requestUrl).done(function(response){
+                $isLoaded = $('#isLoaded').val();
+
+                if($requestInterval == 12 || $requestInterval == 0){
+                    $btcPrice = response.btcPrice.toLocaleString(undefined, {minimumFractionDigits: 2});
+                    $bitnodesCount = response.bitnodesCount.toLocaleString(undefined, {minimumFractionDigits: 0});
+                    $altCap = response.altCap;
+                    $btcCap = response.btcCap;
+                    $dom = response.dom;
+                    $totalCap = response.totalCap;
+                    $volumeAlt = response.volumeAlt;
+                    $volumeBtc = response.volumeBtc;
+                    $volumeTotal = response.volumeTotal;
+
+                    $domIndex = ($btcCap / ($btcCap + $altCap)) * 100;
+
+                    $('.total_market_cap').text($totalCap.toLocaleString(undefined, {minimumFractionDigits: 2}).split('.')[0]); // Capitalization
+
+                }else{
+
+                    $coinCount = response.length;
+                    if($page != null){
+                        $offset = ($page * $offset);
+                        $start = $offset - $pageLimit;
+                    }else{
+                        $page = 1;
+                    }
+                    $pageCount = Math.ceil($coinCount / $pageLimit);
+                    // Pagination
+                    $nextPage = parseInt($page) + 1;
+                    $prevPage = parseInt($page) - 1;
+                    $('.pagination__info').html(
+                        'Page <b>'+$page+'</b> of <b>'+$pageCount
+                    );
+                    if($page == 1){
+                        $('.pagination__button_prev').removeClass('button--blue').addClass('button--disabled');
+                    }else{
+                        $('.pagination__button_prev').removeClass('button--disabled').addClass('button--blue');
+                    }
+
+                    if($page == $pageCount){
+                        $('.pagination__button_next').removeClass('button--blue').addClass('button--disabled');
+                    }else{
+                        $('.pagination__button_next').removeClass('button--disabled').addClass('button--blue');
+                    }
+
+                    $('.pagination__button_prev').attr('href', '?page='+$prevPage)
+                    $('.pagination__button_next').attr('href', '?page='+$nextPage)
+
+
+                    $data = response.slice($start, $offset);
+                    $totalMarketCap = 0;
+                    $totalBitcoinCap = 0;
+                    $totalAltCap = 0;
+                    $totalExchangeVolume = 0;
+                    $bitcoinVolume = 0;
+                    $altVolume = 0;
+                    $('.total_coins_count').text($coinCount);
+                    $.each($data, function(index, key){
+                        $index = ($start + index) + 1;
+                        $long = key.long;
+                        $short = key.short;
+                        $name = $long + ' ' + $short;
+                        $mktcap = key.mktcap.toLocaleString(undefined, {minimumFractionDigits: 0});
+                        $price = key.price.toLocaleString(undefined, {minimumFractionDigits: 4});
+
+                        $rawPrice = key.price;
+                        $vwapData = key.vwapData.toLocaleString(undefined, {minimumFractionDigits: 4});
+                        $rawVwapDataBTC = key.vwapData;
+                        $vwapDataBTC = key.vwapDataBTC.toLocaleString(undefined, {minimumFractionDigits: 4});
+                        $supply = key.supply.toLocaleString(undefined, {minimumFractionDigits: 0});
+                        $usdVolumn = key.usdVolume.toLocaleString(undefined, {minimumFractionDigits: 0});
+                        $volume = key.volume.toLocaleString(undefined, {minimumFractionDigits: 0});
+                        $perc = key.perc;
+                        $iconName = $long.toLowerCase().replace(/ /g, '');
+
+
+                        if($perc >= 0){
+                            $percColor = 'style="color: rgb(108, 168, 46);"';
+                            $percClass = ' coin-list__body__row__change--positive';
+                            $arrowSource = 'img/arrow-up-green.svg';
+                            $arrowClass = ' coin-list__body__row__change__icon--up';
+                        }else{
+                            $percColor = 'style="color: rgb(206, 92, 92);"';
+
+                            $percClass = ' coin-list__body__row__change--negative';
+                            $arrowSource = 'img/arrow-down-red.svg';
+                            $arrowClass = ' coin-list__body__row__change__icon--down';
+                        }
+
+                            if($isLoaded != 1){
+                                if($short == 'BTC' || $short == 'BCH'){
+                                    $price = key.price.toLocaleString(undefined, {minimumFractionDigits: 2});
+                                }
+                                if($long == 'Bitcoin'){
+                                    $href = 'href="http://bitcoinupdate.live/" target="_blank" ';
+                                    $('#btcCoinValue').val(key.price);
+                                    $bitcoinVolume += key.volume;
+                                }else{
+                                    $altVolume += key.volume
+                                    $href = '';
+                                }
+                                if($long == 'Ethereum'){
+                                    $('#ethCoinValue').val(key.price);
+                                }
+
+
+
+                                $('.coin-list__body').append(
+                                    '<a data-id="'+$short+'" data-index="'+$index+'" data-coin="'+$long+'" data-price="'+key.price+'" class="coin-list__body__row" href="coin?ticker='+$short+'">' +
+                                    '<div class="wrapper">' +
+                                    '<div class="grid">' +
+                                    '<div class="grid__col grid__col--3-of-8 grid__col--m-4-of-12 grid__col--s-5-of-10 grid__col--am">' +
+                                    '<div class="coin-list__body__row__cryptocurrency">' +
+                                    '<div class="coin-list__body__row__cryptocurrency__prepend">' +
+                                    '<span class="coin-list__body__row__cryptocurrency__prepend__rank">'+$index+'</span>' +
+                                    '<span class="coin-list__body__row__cryptocurrency__prepend__icon">' +
+                                    '<span class="sprite sprite-' + $iconName + ' small_coin_logo"></span>' +
+                                    '</span>' +
+                                    '</div>' +
+                                    '<div class="coin-list__body__row__cryptocurrency__name">' +
+                                    '<span class="coin-name">'+$name+'</span>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '</div><div class="grid__col grid__col--1-of-4 grid__col--m-3-of-12 grid__col--s-3-of-10 grid__col--am"><span class="coin-list__body__row__price coin-list__body__row__price--huge-number"><span class="coin-list__body__row__price__value">$'+$price+'</span></span></div><div class="grid__col grid__col--1-of-4 grid__col--m-3-of-12 grid__col--am hide-on-m"><span class="coin-list__body__row__market-cap"><span class="coin-list__body__row__market-cap__value">$'+$mktcap+'</span></span></div><div class="grid__col grid__col--1-of-8 grid__col--m-2-of-12 grid__col--s-2-of-10 grid__col--am"><span class="coin-list__body__row__change '+$percClass+'">' +
+                                    +$perc+
+                                    '%<img class="coin-list__body__row__change__icon '+$arrowClass+'" src="'+$arrowSource+'" width="5" height="7" alt="">' +
+                                    '</span><span class="coin-list__body__row__chart"></span></div></div></div></a>'
+                                );
+                            }
+
+
+                    });
+
+                    // Compute Total Volums
+
+                    $.each($data, function(index, key){
+                        $totalMarketCap += key.mktcap;
+                        $totalExchangeVolume += key.volume;
+
+                    });
+
+                    $domIndex = ($totalBitcoinCap / $totalMarketCap) * 100;
+                    $('.total_market_cap').text($totalMarketCap.toLocaleString(undefined, {minimumFractionDigits: 0}).split('.')[0]);
+                    $('.total_24h_volume').text($totalExchangeVolume.toLocaleString(undefined, {minimumFractionDigits: 0}).split('.')[0]);
+                    $('#isLoaded').val(1);
+
+                }
+
+
+
+
+
+                $requestInterval += 1;
+                if($requestInterval < 2){
+                    setTimeout(function(){
+                        exec()
+                    }, 5000)
+                }
+
+                if($requestInterval == 2){
+                    // on content load
+
+                    $('.splash-screen').css('opacity', 0);
+                    setTimeout(function(){
+                        $('.frame__row').removeClass('display-none');
+                        $('.splash-screen').addClass('display-none');
+                    }, 400)
+                    execCoinHistory();
+
+                }
+
+            });
+        }
+        function execCoinHistory(){
+
+            $row = $('.coin-list__body__row:eq('+$count+')');
+            $id = $row.attr('data-id');
+            $url = 'http://coincap.io/history/1day/'+$id;
+            $currentClass = $row.find('.coin-list__body__row__change');
+            $chartContainer = $row.find('.coin-list__body__row__chart');
+            if($currentClass.hasClass('coin-list__body__row__change--negative') == true){
+                $stroke = '#ff6060';
+            }else{
+                $stroke = '#3cd483';
+            }
+
+            getCoinHistory($url).done(function(response){
+                $points = [];
+                if(response != null){
+                    for($x = 0; $x < response.price.length; $x++){
+                        $line = response.price[$x][1];
+
+                        $points.push($line);
+                    }
+
+                    $chartContainer.sparkline($points, {
+                        type: 'line',
+                        width: '60',
+                        height: '20',
+                        spotRadius: 1,
+                        lineColor: $stroke,
+                        fillColor: '#eaffff',
+                        spotColor: undefined,
+                        minSpotColor: undefined,
+                        maxSpotColor: undefined,
+                        highlightSpotColor: undefined,
+                        highlightLineColor: undefined,
+                        drawNormalOnTop: false
+                    });
+                }
+                if($count < $pageLimit){
+                    execCoinHistory();
+                }
+                $count++;
+
+            });
+
+        }
+
+
+        //Search Field
+        $('#search_field').on('keyup', function(){
+            $('.pagination').addClass('display-none');
+            $('.coin-list__body').empty();
+            $url = 'http://coincap.io/front';
+            $searchCount = 0;
+            if($(this).val() != '') {
+                $text = $.trim($(this).val()).toLowerCase();
+
+                getFront($url).done(function (response) {
+                    $data = response;
+                    $.each($data, function(index, key){
+                        $long = key.long;
+                        $short = key.short;
+                        $name = $long + ' ' + $short;
+                        $regExp = new RegExp($text, "i");
+                        if($name.search($regExp) != -1){
+                            $searchCount++;
+                            $index = ($start + index) + 1;
+
+
+                            $mktcap = key.mktcap.toLocaleString(undefined, {minimumFractionDigits: 0});
+                            $price = key.price.toLocaleString(undefined, {minimumFractionDigits: 4});
+                            $rawPrice = key.price;
+                            $vwapData = key.vwapData.toLocaleString(undefined, {minimumFractionDigits: 4});
+                            $rawVwapDataBTC = key.vwapData;
+                            $vwapDataBTC = key.vwapDataBTC.toLocaleString(undefined, {minimumFractionDigits: 4});
+                            $supply = key.supply.toLocaleString(undefined, {minimumFractionDigits: 0});
+                            $usdVolumn = key.usdVolume.toLocaleString(undefined, {minimumFractionDigits: 0});
+                            $volume = key.volume.toLocaleString(undefined, {minimumFractionDigits: 0});
+                            $perc = key.perc;
+                            $iconName = $long.toLowerCase().replace(/ /g, '');
+
+
+                            if($perc >= 0){
+                                $percColor = 'style="color: rgb(108, 168, 46);"';
+                                $percClass = ' coin-list__body__row__change--positive';
+                                $arrowSource = 'img/arrow-up-green.svg';
+                                $arrowClass = ' coin-list__body__row__change__icon--up';
+                            }else{
+                                $percColor = 'style="color: rgb(206, 92, 92);"';
+
+                                $percClass = ' coin-list__body__row__change--negative';
+                                $arrowSource = 'img/arrow-down-red.svg';
+                                $arrowClass = ' coin-list__body__row__change__icon--down';
+                            }
+
+                            if($isLoaded != 1){
+                                if($short == 'BTC' || $short == 'BCH'){
+                                    $price = key.price.toLocaleString(undefined, {minimumFractionDigits: 2});
+                                }
+                                if($long == 'Bitcoin'){
+                                    $href = 'href="http://bitcoinupdate.live/" target="_blank" ';
+                                    $('#btcCoinValue').val(key.price);
+                                    $bitcoinVolume += key.volume;
+                                }else{
+                                    $altVolume += key.volume
+                                    $href = '';
+                                }
+                                if($long == 'Ethereum'){
+                                    $('#ethCoinValue').val(key.price);
+                                }
+
+
+
+                                $('.coin-list__body').append(
+                                    '<a data-id="'+$short+'" data-index="'+$index+'" data-coin="'+$long+'" data-price="'+key.price+'" class="coin-list__body__row" href="coin?ticker='+$short+'">' +
+                                    '<div class="wrapper">' +
+                                    '<div class="grid">' +
+                                    '<div class="grid__col grid__col--3-of-8 grid__col--m-4-of-12 grid__col--s-5-of-10 grid__col--am">' +
+                                    '<div class="coin-list__body__row__cryptocurrency">' +
+                                    '<div class="coin-list__body__row__cryptocurrency__prepend">' +
+                                    '<span class="coin-list__body__row__cryptocurrency__prepend__rank">'+$index+'</span>' +
+                                    '<span class="coin-list__body__row__cryptocurrency__prepend__icon">' +
+                                    '<span class="sprite sprite-' + $iconName + ' small_coin_logo"></span>' +
+                                    '</span>' +
+                                    '</div>' +
+                                    '<div class="coin-list__body__row__cryptocurrency__name">' +
+                                    '<span class="coin-name">'+$name+'</span>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '</div><div class="grid__col grid__col--1-of-4 grid__col--m-3-of-12 grid__col--s-3-of-10 grid__col--am"><span class="coin-list__body__row__price coin-list__body__row__price--huge-number"><span class="coin-list__body__row__price__value">$'+$price+'</span></span></div><div class="grid__col grid__col--1-of-4 grid__col--m-3-of-12 grid__col--am hide-on-m"><span class="coin-list__body__row__market-cap"><span class="coin-list__body__row__market-cap__value">$'+$mktcap+'</span></span></div><div class="grid__col grid__col--1-of-8 grid__col--m-2-of-12 grid__col--s-2-of-10 grid__col--am"><span class="coin-list__body__row__change '+$percClass+'">' +
+                                    +$perc+
+                                    '%<img class="coin-list__body__row__change__icon '+$arrowClass+'" src="'+$arrowSource+'" width="5" height="7" alt="">' +
+                                    '</span><span class="coin-list__body__row__chart"></span></div></div></div></a>'
+                                );
+                            }
+                        }
+
+                    });
+                    $count = 0;
+                    $pageLimit = $searchCount;
+                    execCoinHistory();
+                });
+            }
+
+        });
+
+        $('.search__close').on('click', function(){
+
+           $('.pagination').removeClass('display-none');
+            $requestInterval = 1;
+            $count = 0;
+            $pageLimit = 50;
+            $('#isLoaded').val(0)
+            $('.coin-list__body').empty();
+            exec();
+        });
+
+        // Buy & Sell
+        $('.select_coin_button').on('click', function(){
+           $type = $(this).data('action');
+           $display = $(this).find('.select_coin_button_window').css('display');
+           if($display == 'none'){
+               $(this).find('.select_coin_button_window').css('display', 'block');
+           }else{
+               $(this).find('.select_coin_button_window').css('display', 'none');
+           }
+        });
+
+
+        $('.exchange-button').on('click', function(){
+            $('*, *:after, *:before').css('-moz-box-sizing', 'border-box');
+            $('*, *:after, *:before').css('box-sizing', 'border-box');
+            $('.trade_modal').css('display', 'block');
+            $currentCoinPay = $.trim($('.select_coin_window_text:eq(0)').text());
+            $currentCoinBuy = $.trim($('.select_coin_window_text:eq(1)').text());
+
+            var coinPairInterval = setInterval(function(){
+                $.getJSON( "https://shapeshift.io/marketinfo/"+$currentCoinPay+"_"+$currentCoinBuy, function( data ) {
+                    $limit = data.limit;
+                    $maxLimit = data.maxLimit;
+                    $minimum = data.minimum;
+                    $minerFee = data.minerFee;
+                    $rate = data.rate;
+                    $tradePair = data.pair;
+                    $pair = data.pair.split('_');
+                    $pay = $pair[0];
+                    $buy = $pair[1];
+
+                    $('.trade_modal_deposit_data_value_min_amount').text($minimum);
+                    $('.trade_modal_deposit_data_value_min_coin').text($pay);
+
+                    $('.trade_modal_deposit_data_value_max_amount').text($maxLimit);
+                    $('.trade_modal_deposit_data_value_max_coin').text($pay);
+
+                    $('.trade_modal_deposit_data_value_fee_amount').text($minerFee);
+                    $('.trade_modal_deposit_data_value_fee_coin').text($buy);
+
+
+                    $('.trade_modal_conversion_rate').text(1 + ' '+$pay+ ' = ' + $rate + ' ' + $buy);
+                });
+            }, 1000);
+
+
+
+            $('.trade_modal_bottom_close_button').on('click', function(){
+                $('.trade_modal').css('display', 'none');
+                clearInterval(coinPairInterval);
+            });;
+
+            $('.trade_modal_bottom_shift_button').on('click', function(){
+                $buttonText = $(this).text();
+                $(this).html('<i class="fa fa-spinner fa-spin"></i>');
+               $payAmount = $('.pay_amount_input').val();
+               $payAddress = $.trim($('.pay_address_input').val());
+               $refundAddress = $('.pay_refund_address_input').val();
+
+               if($payAddress == ''){
+                   $(this).html($buttonText);
+                   alert('No Withdrawal Address specified.');
+                   return false;
+               }
+                /*
+               if($payAmount != ''){
+                   if(parseFloat($payAmount) < $minimum){
+                       alert('The amount you want to receive is lower than our limit of ' + $minimum + ' ' + $pay);
+                       return false;
+                   }
+                   if(parseFloat($payAmount) > $maxLimit){
+                       alert('The amount you want to receive is higher than our max limit of ' + $maxLimit + ' ' + $pay);
+                       return false;
+                   }
+               }
+                */
+               $post = {
+                   amount: $payAmount,
+                   pair: $tradePair,
+                   withdrawalAddress: $payAddress,
+                   refundAddress: $refundAddress
+               };
+
+
+                $.post( "Module/Control/trade.php?action=sendAmount", $post)
+                    .done(function( data ) {
+                        $response = jQuery.parseJSON(data);
+                        console.log($response);
+                        if(typeof $response['success'] != 'undefined'){
+                            $coinSelectedPay = $('.select_coin_button:eq(0)').attr('data-name');
+                            $coinSymbolPay = $('.select_coin_button:eq(0)').find('.select_coin_window_text').text();
+                            $coinSelectedBuy = $('.select_coin_button:eq(1)').attr('data-name');
+                            $coinSymbolBuy = $('.select_coin_button:eq(1)').find('.select_coin_window_text').text();
+                            $coinIcon = $('.select_coin_button:eq(0)').find('.current_selected_coin_img').attr('src');
+
+                            $quotedRate = $response['success']['quotedRate'];
+                            $withdrawalAmount = $response['success']['withdrawalAmount'];
+                            $orderId = $response['success']['orderId'];
+                            $pair = $response['success']['pair'];
+                            $withdrawalAddress = $('.pay_address_input').val();
+                            $refundAddress = $('.pay_refund_address_input').val();
+
+                            $sessionData = {
+                                coinSelectedPay: $coinSelectedPay,
+                                coinSymbolPay: $coinSymbolPay,
+                                coinSelectedBuy: $coinSelectedBuy,
+                                coinSymbolBuy: $coinSymbolBuy,
+                                coinIcon: encodeURIComponent($coinIcon),
+                                quotedRate: $quotedRate,
+                                withdrawalAmount: $withdrawalAmount,
+                                withdrawalAddress: $withdrawalAddress,
+                                refundAddress: $refundAddress,
+                                orderId: $orderId,
+                                pair: $pair,
+                                action: 'post'
+                            };
+
+                            $.post("Module/Control/transaction.php", $sessionData).done(function(){
+                                location.href = "trade.html"
+                            });
+
+                        }else{
+                            $('.trade_modal_bottom_shift_button').text($buttonText);
+                            alert($response['error']);
+                        }
+                    });
+
+            });
+
+        });
+
+
+
+
+
+        setInterval(function(){
+            $('.coin_pump_now').removeClass('coin_pump_now');
+            $('.coin_dump_now').removeClass('coin_dump_now');
+        }, 500);
+
+        //Announcement Interval
+        $announcements = [
+            {
+                title: 'Buy coins with USD', 'link': 'https://www.coinbase.com/join/5362ad122fce19902a000007'
+            },
+            {
+                title: 'Trade your coins easily', 'link': 'https://hitbtc.com/?ref_id=5a344dd04595a'
+            },
+            {
+                title: 'Follow us on twitter', 'link': 'https://twitter.com/coinrating'
+            },
+        ];
+        $interval = 0;
+        setInterval(function(){
+            $('.announcement__message').find('a').text($announcements[$interval].title).attr('href', $announcements[$interval].link);
+            $interval++;
+            if($interval == 3){
+                $interval = 0;
+            }
+        }, 10000)
+    });
+
+</script>
+<script>
+    function isNumberKey(evt)
+    {
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+
+        if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 45){
+            return false;
+        }else{
+            return true;
+        }
+
+    }
+</script>
+<script type="text/javascript">
+    var variables = {"url":"","sorton":false,"sortby":false,"search":false,"api":"","base":"USD"};
+</script>
+<script type="text/javascript" src="js/coinranking.js?v=51"></script>
+</body>
+</html>

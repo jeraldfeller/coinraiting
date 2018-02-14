@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><title>Coin Raiting</title>
+    <link rel="canonical" href="https://coinrating.com">
+
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/spritesheet.css?v=1_6_4">
+    <link rel="stylesheet" type="text/css" href="css/main.css?v=185">
+    <link rel="stylesheet" type="text/css" href="css/trademodal.css?v=180">
+    <link rel="stylesheet" type="text/css" href="css/loader.css?v=176">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="MobileOptimized" content="width">
+    <meta name="format-detection" content="telephone=no">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/qrcode/qrcode.js"></script>
+    <style>
+        .down {
+            color: #ff6060;
+        }
+        .up {
+            color: #3cd483;
+        }
+        .coin_pump_now {
+            color: green;
+            background-color: rgb(234, 255, 234);
+        }
+
+        .coin_dump_now {
+            color: red;
+            background-color: rgb(255, 234, 234);
+        }
+        .coin-list__body__row{
+            -webkit-transition: all 0.5s ease;
+            -moz-transition: all 0.5s ease;
+            -o-transition: all 0.5s ease;
+            transition: all 0.5s ease;
+        }
+    </style>
+</head>
+<body style="padding: 0; margin: 0; background: #ecf1f4; letter-spacing: .03em">
+<div id="app">
+    <div data-reactroot="" style="font-family: Montserrat, sans-serif;">
+        <div style="display: flex; align-items: center; border-bottom: 1px solid rgb(219, 228, 233);">
+            <div style="flex-grow: 1; padding: 21px 23px;" class="logo-container">
+                <a class="logo" href="https://coinrating.com">
+                    <img class="logo__img" src="img/1000-CoinRating-Logo.png" alt="Coinrating"/>
+                </a>
+            </div>
+            <a href="support@coinrating.com" style="flex-grow: 0; display: inline-block; background-color: rgba(58, 212, 131, 0.15); font-size: 9px; font-weight: bold; color: rgb(58, 212, 131); transition: background-color 100ms ease-in-out; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.15em; padding: 8px 16px 10px; text-align: center; border: 0px solid; cursor: pointer; vertical-align: middle; font-family: Montserrat, sans-serif; margin-right: 15px; margin-top: 2px;"><span style="vertical-align: middle;">support</span></a>
+        </div>
+        <div>
+            <div style="width: 100%; margin-top: 14px; padding-bottom: 60px;">
+                <div style="">
+                    <div style="width: 100%; border-bottom: 1px solid rgb(219, 228, 233);">
+                        <div style="max-width: 790px; padding: 17px 17px 4px; margin: 0px auto;">
+                            <h1 style="font-size: 21px; letter-spacing: 0px; color: rgb(95, 109, 133); font-weight: normal; text-align: center; margin-bottom: 4px; margin-top: 19px;" class="trade_status_header">
+
+                            </h1>
+                            <p style="font-size: 14px; letter-spacing: 0.03em; color: rgb(130, 142, 161); font-weight: normal; text-align: center; margin-top: 4px; margin-bottom: 38px;">to the address below to proceed</p>
+                            <div>
+                                <div style="display: flex; margin-bottom: 35px;">
+                                    <div style="flex-grow: 1; box-shadow: rgb(227, 232, 235) 0px 6px 13px 0px; width: 100%; background-color: rgb(255, 255, 255); border-radius: 6px; display: flex; flex-direction: column;"><div style="display: flex; border-bottom: 1px solid rgb(228, 233, 242); flex-direction: row; align-items: center; padding: 15px 23px 15px 30px; flex-grow: 1;"><div style="flex-grow: 1; display: flex; flex-flow: row wrap; align-items: center; font-size: 17px; color: rgb(95, 109, 133); padding-bottom: 9px;"><div style="margin: 0px 0px 12px; font-size: 9px; font-weight: bold; color: rgb(175, 182, 194); text-transform: uppercase; letter-spacing: 0.15em; width: 100%;">Amount</div><img class="pay_icon" style="height: 26px; margin-right: 9px;"><span class="pay_amount"></span><!-- react-text: 26 -->&nbsp;<!-- /react-text --><span class="pay_symbol" style="font-size: 9px; font-weight: bold; letter-spacing: 0.15em; color: rgb(175, 182, 194);"></span></div></div>
+                                        <div style="display: flex; border-bottom: 1px solid rgb(228, 233, 242); flex-direction: row; align-items: center; padding: 15px 23px 15px 30px; flex-grow: 1;">
+                                            <div style="flex-grow: 1; display: flex; flex-flow: row wrap; align-items: center; font-size: 14px; color: rgb(96, 172, 243); letter-spacing: 0.03em; word-break: break-all; padding-bottom: 9px;">
+                                                <div style="margin: 0px 0px 12px; font-size: 9px; font-weight: bold; color: rgb(175, 182, 194); white-space: nowrap; text-transform: uppercase; letter-spacing: 0.1em; width: 100%; word-break: normal; line-height: 18px;">To Address</div>
+                                                <span class="to_address"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="background-color: rgb(255, 255, 255); border-radius: 6px; padding: 19px; flex-grow: 0; flex-shrink: 0; box-shadow: rgb(227, 232, 235) 0px 6px 13px 0px; margin-left: 34px;">
+                                        <span id="qrcode"></span>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <p style="font-size: 14px; letter-spacing: 0.03em; color: rgb(138, 149, 167); text-align: center; flex-shrink: 1; line-height: 24px; margin: 16px 26px 0px;">
+                                <!-- react-text: 880 -->Approximately <!-- /react-text -->
+                                <span style="color: rgb(87, 96, 112);" class="quoted_rate">
+                              </span>
+                                <!-- react-text: 885 --> will be sent to your wallet<!-- /react-text -->
+                            </p>
+                            <p style="font-size: 12px; color: rgb(161, 174, 197); text-align: center; padding-bottom: 17px;">Depending on current exchange rate</p>
+                        </div>
+                    </div>
+                    <div style="width: 100%;">
+                        <div style="max-width: 790px; padding: 17px 17px 4px; margin: 0px auto;">
+                            <div style="display: flex; justify-content: space-between; margin-top: 28px; padding: 0px 1%;">
+                                <div style="flex-grow: 1; text-align: center; max-width: 80px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" style="width: 45px; height: 45px;">
+                                        <circle class="deposit_circle" cx="30" cy="30" r="30" fill="#616b83"></circle>
+                                        <g class="awaiting_deposit_arrow" style="animation-name: depositArrow; animation-duration: 0.8s; animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1); animation-iteration-count: infinite;">
+                                            <polyline points="35.5 28.5 30.5 33.5 25.5 28.5" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></polyline>
+                                            <line x1="30.5" y1="21.5" x2="30.5" y2="33.5" fill="none" stroke="#fff" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3"></line>
+                                        </g>
+                                        <line x1="36.5" y1="38.5" x2="24.5" y2="38.5" fill="none" stroke="#fff" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3"></line>
+                                    </svg>
+                                    <div style="text-transform: uppercase; letter-spacing: 0.15em; font-weight: bold; font-size: 9px; line-height: 145%; color: rgb(97, 107, 131); margin-top: 5px;">Awaiting deposit</div>
+                                </div>
+                                <div style="flex-grow: 1; text-align: center; max-width: 80px;"><img src="img/bracket-right-grey.svg" style="width: 10px; text-align: center; margin-top: 13px;"></div>
+                                <div style="flex-grow: 1; text-align: center; max-width: 80px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" style="width: 45px; height: 45px;">
+                                        <circle class="exchange_circle" cx="30" cy="30" r="30" fill="#a6adba"></circle>
+                                        <g class="awaiting_exchange_arrow" style="animation-name: exchangeArrowRight; animation-duration: 0.8s; animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1); animation-iteration-count: 0;">
+                                            <line x1="22.5" y1="22.5" x2="38.5" y2="22.5" fill="none" stroke="#fff" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3"></line>
+                                            <polyline points="33.5 17.5 38.5 22.5 33.5 27.5" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></polyline>
+                                        </g>
+                                        <g class="awaiting_exchange_arrow" style="animation-name: exchangeArrowLeft; animation-duration: 0.8s; animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1); animation-iteration-count: 0;">
+                                            <line x1="38.5" y1="36.5" x2="22.5" y2="36.5" fill="none" stroke="#fff" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3"></line>
+                                            <polyline points="27.5 41.5 22.5 36.5 27.5 31.5" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></polyline>
+                                        </g>
+                                    </svg>
+                                    <div style="text-transform: uppercase; letter-spacing: 0.15em; font-weight: bold; font-size: 9px; line-height: 145%; color: rgb(166, 173, 186); margin-top: 5px;">Awaiting exchange</div>
+                                </div>
+                                <div style="flex-grow: 1; text-align: center; max-width: 80px;"><img src="img/bracket-right-grey.svg" style="width: 10px; text-align: center; margin-top: 13px;"></div>
+                                <div style="flex-grow: 1; text-align: center; max-width: 80px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" style="width: 45px; height: 45px;">
+                                        <circle class="complete_circle" cx="30" cy="30" r="30" fill="#a6adba"></circle>
+                                        <path class="complete_path" d="M37.5,25.5l-9,11-6-6" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+                                    </svg>
+                                    <div style="text-transform: uppercase; letter-spacing: 0.15em; font-weight: bold; font-size: 9px; line-height: 145%; color: rgb(166, 173, 186); margin-top: 5px;">All done!</div>
+                                </div>
+                            </div>
+                            <p style="margin-top: 28px; font-size: 12px; letter-spacing: 0.03em; text-align: center; font-weight: normal; color: rgb(161, 174, 197);">
+                                <!-- react-text: 918 -->Average exchange time is <!-- /react-text --><span style="font-weight: bold; color: rgb(60, 212, 131);">5 - 30</span><!-- react-text: 920 --> minutes<!-- /react-text -->
+                            </p>
+                        </div>
+                    </div>
+                    <div style="width: 100%; border-bottom: 1px solid rgb(219, 228, 233);">
+                        <div style="">
+                            <div style="border-color: rgb(96, 172, 243); border-style: solid; border-width: 1px 0px; border-image: initial; margin-top: 35px; margin-bottom: 35px; padding: 0px 20px 50px;">
+                                <div style="text-align: center; font-size: 11px; font-weight: bold; letter-spacing: 0.15em; color: rgb(96, 172, 243); text-transform: uppercase; cursor: pointer; padding: 15px 20px 18px; margin-bottom: 45px;" class="toggle_hide_order_data show">
+                                    <!-- react-text: 925 -->Hide<!-- /react-text --><!-- react-text: 926 --> order information<!-- /react-text --><i class="fa fa-chevron-up"></i>
+                                </div>
+                                <div class="order_data_container">
+                                    <div style="font-size: 14px; letter-spacing: 0.03em; color: rgb(95, 109, 133); margin-bottom: 12px;">
+                                        <!-- react-text: 941 -->Receive address (<!-- /react-text --><!-- react-text: 942 -->Ether<!-- /react-text --><!-- react-text: 943 -->)<!-- /react-text -->
+                                    </div>
+                                    <div style="border: 1px solid rgb(219, 228, 233); border-radius: 3px; color: rgb(120, 133, 163); font-size: 14px; padding: 10px 18px 13px; margin-bottom: 29px; word-break: break-all; line-height: 24px;" class="receive_address"></div>
+                                    <div style="font-size: 14px; letter-spacing: 0.03em; color: rgb(95, 109, 133); margin-bottom: 12px;">
+                                        <!-- react-text: 946 -->Refund address (<!-- /react-text --><!-- react-text: 947 -->Bitcoin<!-- /react-text --><!-- react-text: 948 -->)<!-- /react-text -->
+                                    </div>
+                                    <div style="border: 1px solid rgb(219, 228, 233); border-radius: 3px; color: rgb(120, 133, 163); font-size: 14px; padding: 10px 18px 13px; margin-bottom: 29px; word-break: break-all; line-height: 24px;" class="refund_address"></div>
+                                    <div style="font-size: 14px; letter-spacing: 0.03em; color: rgb(95, 109, 133); margin-bottom: 12px;">Exchange rate</div>
+                                    <div style="font-size: 14px; letter-spacing: 0.03em; color: rgb(120, 133, 163); margin-bottom: 29px;" class="exchange_rate">
+
+                                    </div>
+                                    <div style="font-size: 14px; letter-spacing: 0.03em; color: rgb(95, 109, 133); margin-bottom: 12px;">Order ID</div>
+                                    <div style="font-size: 14px; letter-spacing: 0.03em; color: rgb(120, 133, 163);" class="order_id"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="max-width: 790px; padding: 17px 17px 4px; margin: 0px auto;">
+                        <div style="display: block; margin-top: 33px;">
+                            <a href="https://coinrating.com/" style="display: block; font-size: 11px; font-weight: bold; color: rgb(58, 212, 131); transition: opacity 100ms ease-in-out; border-radius: 50px; width: 100%; text-transform: uppercase; letter-spacing: 0.15em; padding: 12px 10px 16px; text-align: center; margin-top: 20px; border: 2px solid rgb(215, 227, 234); cursor: pointer; vertical-align: middle; font-family: Montserrat, sans-serif;"><img src="img/100-CoinRating-Logo.png" style="height: 13px; vertical-align: middle; margin-right: 7px; display: inline-block; margin-top: 0px;"><span style="vertical-align: middle;">Coinraiting</span></a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    $(document).ready(function(){
+       $.get('Module/Control/transaction.php', function(data){
+           if(data == false){
+               location.href = 'index.html';
+           }
+           $data = jQuery.parseJSON(data);
+           $coinIcon = decodeURIComponent($data.coinIcon);
+           $coinSelectedBuy = $data.coinSelectedBuy;
+           $coinSelectedPay = $data.coinSelectedPay;
+           $coinSymbolBuy = $data.coinSymbolBuy;
+           $coinSymbolPay = $data.coinSymbolPay;
+           $quotedRate = $data.quotedRate;
+           $withdrawalAddress = $data.withdrawalAddress;
+           $refundAddress = $data.refundAddress;
+           $withdrawalAmount = $data.withdrawalAmount;
+           $orderId = $data.orderId;
+           $pair = $data.pair;
+
+           $('.trade_status_header').text('Send ' + $coinSelectedPay);
+           $('.pay_icon').attr('src', $coinIcon);
+           $('.pay_amount').text($withdrawalAmount);
+           $('.pay_symbol').text($coinSymbolPay);
+
+           $('.to_address').text($withdrawalAddress);
+
+            $('.quoted_rate').text($quotedRate + ' ' + $coinSelectedBuy);
+
+            $('.receive_address').text($withdrawalAddress);
+            $('.refund_address').text($refundAddress);
+
+
+           // QR CODE GENERATOR
+
+           $withdrawalAddress = 'gljkshfsjkghslkhflsakfafsdfs';
+
+           var qrcode = new QRCode("qrcode", {
+               text: $withdrawalAddress,
+               width: 128,
+               height: 128,
+               colorDark : "#000000",
+               colorLight : "#ffffff",
+               correctLevel : QRCode.CorrectLevel.H
+           });
+
+           qrcode.clear(); // clear the code.
+           qrcode.makeCode($withdrawalAddress);
+           $.getJSON( "https://shapeshift.io/marketinfo/"+$pair, function( pair_data ) {
+               $rate = pair_data.rate;
+               $('.exchange_rate').text(1 + ' ' + $coinSelectedPay + ' = ' + $rate + ' ' + $coinSelectedBuy);
+               $('.order_id').text($orderId);
+               $post = {address: $withdrawalAddress}
+
+               //Validate
+
+               $.getJSON("https://shapeshift.io/validateAddress/"+$withdrawalAddress+"/"+$coinSymbolBuy, function( validate_data ) {
+                   console.log(validate_data);
+                   if(validate_data.isvalid == true){
+                       $('.awaiting_deposit_arrow').css('animation-iteration-count', 0);
+                       $('.awaiting_exchange_arrow').css('animation-iteration-count', 'infinite');
+                       $('.deposit_circle').attr('fill', '#3CD483');
+                       $('.exchange_circle').attr('fill', '#616b83');
+                       $.get( "Module/Control/trade.php?action=txbyaddress", $post)
+                           .done(function( data ) {
+                               console.log('Response Status: ');
+                               console.log(data);
+                               if(typeof data[0] != 'undefined'){
+                                   $status = data[0]['status'];
+                               }else{
+                                   $status = data['status'];
+                               }
+                               if($status == 'received'){
+                                   $('.awaiting_exchange_arrow').css('animation-iteration-count', 0);
+                                   $('.exchange_circle').attr('fill', '#3CD483');
+                                   $('.complete_circle').attr('fill', '#616b83');
+                                   $('.complete_path').addClass('pulse');
+                               }
+                               $getStatusInterval = setInterval(function(){
+                                   $.get( "Module/Control/trade.php?action=txbyaddress", $post)
+                                       .done(function( data ) {
+                                           if(typeof data[0] != 'undefined'){
+                                               $status = data[0]['status'];
+                                           }else{
+                                               $status = data['status'];
+                                           }
+                                           if($status == 'received'){
+                                               $('.awaiting_exchange_arrow').css('animation-iteration-count', 0);
+                                               $('.exchange_circle').attr('fill', '#3CD483');
+                                               $('.complete_circle').attr('fill', '#616b83');
+                                               $('.complete_path').addClass('pulse');
+                                           }
+                                           if($status == 'complete'){
+                                               $('.complete_circle').attr('fill', '#3CD483');
+                                               $('.complete_path').removeClass('pulse');
+                                               clearInterval($getStatusInterval);
+
+                                               $.post('Module/Control/transaction.php', {action: 'unset'});
+                                           }
+                                           if($status == 'failed'){
+                                               alert('Trade Failed');
+                                           }
+                                       });
+                               }, 10000);
+
+                           });
+                   }else{
+                       alert(validate_data.error);
+                   }
+
+               });
+
+           });
+
+
+       });
+
+       $('.toggle_hide_order_data').on('click', function(){
+           if($(this).hasClass('show')){
+               $('.order_data_container').css('display', 'none');
+               $(this).removeClass('show').addClass('hide');
+               $(this).find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+           }else{
+               $('.order_data_container').css('display', 'block');
+               $(this).removeClass('hide').addClass('show');
+               $(this).find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+           }
+       });
+    });
+</script>
+</html>

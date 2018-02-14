@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Coinraiting</title>
+    <link rel="canonical" href="https://coinrating.com">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/spritesheet.css?v=1_6_4">
+    <link rel="stylesheet" type="text/css" href="css/main.css?v=183">
+    <link rel="stylesheet" type="text/css" href="css/slider.css?v=180">
+    <link rel="stylesheet" type="text/css" href="css/trademodal.css?v=180">
+    <link rel="stylesheet" type="text/css" href="css/loader.css?v=180">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="MobileOptimized" content="width">
+    <meta name="format-detection" content="telephone=no">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/qrcode/qrcode.js"></script>
+    <script>
+        var getURLParameter = function (name) {
+            return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[undefined,""])[1].replace(/\+/g, '%20'))||null;
+        };
+        (function() {
+            var exLog = console.warn;
+            console.warn = function(msg) {
+                exLog.apply(console, arguments);
+                alert(msg);
+            }
+        })()
+    </script>
+    <style>
+        .down {
+            color: #ff6060;
+        }
+        .up {
+            color: #3cd483;
+        }
+        .coin_pump_now {
+            color: green;
+            background-color: rgb(234, 255, 234);
+        }
+        .coin_dump_now {
+            color: red;
+            background-color: rgb(255, 234, 234);
+        }
+        .coin-list__body__row{
+            -webkit-transition: all 0.5s ease;
+            -moz-transition: all 0.5s ease;
+            -o-transition: all 0.5s ease;
+            transition: all 0.5s ease;
+        }
+        .trading-view-chart{
+            height: 600px;
+        }
+        .coin-page__chart-container{
+            height: 620px;
+        }
+
+        *,
+        *:after,
+        *:before {
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            font-smoothing: antialiased;
+            text-rendering: optimizeLegibility
+        }
+    </style>
+</head>
+<body class="frame">
+<!-- modal -->
+<div class="trade_modal" style="display: none;">
+    <div class="trade_modal_widget">
+        <div style="display: none;" class="trade_modal_complete">
+            <div class="trade_modal_shift_complete">Shift Complete!</div>
+            <div></div>
+            <div class="trade_modal_social_buttons">
+                <div class="trade_modal_social_button" style="background: rgb(86, 192, 224);"><a href="https://www.facebook.com/coinrating" target="_blank"><span class="social_icon fa fa-facebook"></span></a></div>
+                <div class="trade_modal_social_button" style="background: rgb(88, 185, 87);"><a href="https://twitter.com/coinrating" target="_blank"><span class="social_icon fa fa-twitter"></span></a></div>
+            </div>
+            <div class="col-md-12 pull-right">
+                <div class="close_button trade_modal_bottom_close_button">Close</div>
+            </div>
+        </div>
+        <div class="trade_modal_exchange_container" style="display: block;">
+            <div class="trade_modal_conversion_rate" style="display: block;">Getting Market Data <i class="fa fa-circle-o-notch fa-spin"></i></div>
+            <div class="trade_modal_deposit_limits" style="display: block;">
+                <div class="trade_modal_deposit_data" style="border-right: 1px solid rgb(146, 189, 98);"><div class="trade_modal_deposit_data_name">Deposit Min</div><div class="trade_modal_deposit_data_value"><span class="trade_modal_deposit_data_value_min_amount"></span> <span class="trade_modal_deposit_data_value_min_coin"></span></div></div><div class="trade_modal_deposit_data" style="border-right: 1px solid rgb(146, 189, 98);"><div class="trade_modal_deposit_data_name">Deposit Max</div><div class="trade_modal_deposit_data_value"><span class="trade_modal_deposit_data_value_max_amount"></span> <span class="trade_modal_deposit_data_value_max_coin"></span></div></div><div class="trade_modal_deposit_data"><div class="trade_modal_deposit_data_name">Miner Fee</div><div class="trade_modal_deposit_data_value"><span class="trade_modal_deposit_data_value_fee_amount"></span> <span class="trade_modal_deposit_data_value_fee_coin"></span></div></div>
+            </div>
+            <div class="trade_modal_shift_state" style="display: block;">
+                <div>
+                    <div class="pay_widget" style="direction: ltr; float: left;">
+                        <div class="pay_widget_name">Pay With</div>
+                        <div class="select_coin_button" data-name="Bitcoin" data-action="pay"><img class="coin_icon current_selected_coin_img" src="https://shapeshift.io/images/coins-sm/bitcoin.png">
+                            <span class="select_coin_window_text_container">
+                        <span class="select_coin_window_text">BTC</span>
+                        <span class="select_coin_button_arrow">▾</span>
+                        </span>
+                            <div class="select_coin_button_window select_coin_button_window_pay" style="display: none;">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pay_widget" style="direction: ltr;">
+                        <div class="pay_widget_name">Buy</div>
+                        <div class="select_coin_button" data-name="Ether" data-action="buy"><img class="coin_icon current_selected_coin_img" src="https://shapeshift.io/images/coins-sm/ether.png">
+                            <span class="select_coin_window_text_container">
+                        <span class="select_coin_window_text">ETH</span>
+                        <span class="select_coin_button_arrow">▾</span>
+                        </span>
+                            <div class="select_coin_button_window select_coin_button_window_buy" style="display: none;">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="trade_modal_whitespace_fields">
+                <div><div class="trade_modal_whitespace_field_container" style="width: 66%;"><div class="trade_modal_whitespace_field_title trade_buy_address">ETC Address</div><input class="trade_modal_whitespace_field_name pay_address_input"></div><div class="trade_modal_whitespace_field_container" style="width: 34%;"><div class="trade_modal_whitespace_field_title trade_buy_amount">ETC Amount (optional)</div><input class="trade_modal_whitespace_field_name pay_amount_input" onkeypress="return isNumberKey(event)"></div><div class="trade_modal_whitespace_field_container" style="width: 100%;"><div class="trade_modal_whitespace_field_title">Refund Address (optional)</div><input class="trade_modal_whitespace_field_name pay_refund_address_input"></div></div>
+            </div>
+            <div class="trade_modal_bottom_container">
+                <div class="trade_modal_bottom_sponsor">
+                    Powered by<a href="https://shapeshift.io/" target="_blank"> ShapeShift</a><img class="shapeshift_icon" src="//coincap.io/ss_favicon.ico"></div><div class="trade_modal_bottom_buttons"><div class="close_button trade_modal_bottom_close_button">Close</div><div class="trade_modal_bottom_shift_button">Buy ETC</div>
+            </div>
+            </div>
+        </div>
+
+        <div class="trade_modal_status" style="display: none; margin-top: 10px;">
+            <div clas="row">
+                <div class="col-md-12">
+                    <h2 class="trade_status_header"></h2>
+                    <h5>to address below to proceed</h5>
+                </div>
+                <div class="col-md-12 trade_modal_status_details">
+                    <div class="col-md-12 trade_modal_status_left text-left">
+                        <div class="col-md-12">
+                            <span class="trade_modal_status_details_title">AMOUNT</span>
+                            <span class="trade_modal_status_details_icon">
+                                <img class="coin_icon trade_modal_status_details_icon">
+                            </span>
+                            <span class="trade_modal_status_details_amount"></span>
+                            <span class="trade_modal_status_details_symbol"></span>
+                        </div>
+                        <div class="col-md-12">
+                            <span class="trade_modal_status_details_title">TO ADDRESS</span>
+                            <span class="trade_modal_status_details_address"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-12 text-center">
+                        <div id="qrcode"></div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <h6>Approximately <span class="trade_modal_status_details_amount_send"></span> will be sent to your wallet</h6>
+                    <p>Depending on current exchange rate</p>
+                </div>
+                <hr>
+                <div class="col-md-12">
+                    <h4>Status: <span class="trade_modal_status_details_status"></span></h4>
+                    <p>Average exchange time is 5 - 30 minutes</p>
+                </div>
+                <div class="col-md-12 pull-right">
+                    <div class="close_button trade_modal_bottom_close_button">Close</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<!-- end modal -->
+<div class="splash-screen">
+    <div class="col-md-12 align-center">
+        <img class="logo__img_splash" src="img/600-CoinRating-Logo.png" alt="Coinrating"/>
+    </div>
+    <div class="col-md-12">
+        <div class="loader-container">
+            <span class="dot dot-one"></span>
+            <span class="dot dot-two"></span>
+            <span class="dot dot-three"></span>
+            <span class="dot dot-four"></span>
+        </div>
+    </div>
+
+</div>
+<div class="coin-page display-none">
+    <div class="header header--coin-page">
+        <a class="coin-page__back" href="http://local.coinranking.com" data-action="back-to-all-coins">
+               <span class="coin-page__back-button">
+                  <svg class="coin-page__back-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 14" width="18" height="14">
+                     <line x1="17" y1="7" x2="2" y2="7" fill="none" stroke="#60acf3" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2"></line>
+                     <polyline points="7 13 1 7 7 1" fill="none" stroke="#60acf3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polyline>
+                  </svg>
+               </span>
+        </a>
+        <span class="coin-page__icon-img hide-on-l sprite  small_coin_logo"></span>
+        <div class="coin-page__name">
+            <span class="page_name"></span>
+            <span class="coin-page__symbol"></span>
+        </div>
+        <div class="coin-page__price hide-on-l"><span class="coin-page__price-sign">$</span><span class="coin-page__price-number"></span></div>
+        <div class="announcement">
+            <img class="announcement__img" src="img/bolt.svg" width="9" height="15" alt="Announcement">
+            <div class="announcement__message">
+                <p>
+                    <a href="https://twitter.com/coinrating" target="_blank" title="Follow us on twitter">Follow us on twitter</a>
+                </p>
+            </div>
+        </div>
+        <div class="header__right">
+            <a class="exchange-button button button--green button--medium hide-on-m"><img class="exchange-button__img button__img" src="https://coinranking.com/static/img/exchange.svg" width="10" height="13" alt="Coinranking Instant Exchange"><span class="hide-on-l">Exchange BTC</span></a>
+            <div class="nav">
+                <input class="nav__toggle" id="menu-toggle" type="checkbox">
+                <label for="menu-toggle" class="nav__hamburger">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="16" viewBox="0 0 20 16">
+                        <g fill="none" stroke-linecap="round" stroke-width="2" stroke-miterlimit="10">
+                            <path d="m1 1h18"></path>
+                            <path d="m1 8h18"></path>
+                            <path d="m1 15h18"></path>
+                        </g>
+                    </svg>
+                </label>
+                <div class="nav__menu">
+                    <div class="nav__content">
+                        <label for="menu-toggle" class="nav__cross">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15">
+                                <g fill="none" stroke-linecap="round" stroke-width="2" stroke-miterlimit="10" shape-rendering="crispEdges"><path d="m1 14l13-13"/><path d="m1 1l13 13"/>
+                                </g>
+                            </svg>
+                        </label>
+                        <form method="post" action="">
+                            <input type="hidden" id="sub_base_currency">
+                            <div class="nav__form-group">
+                                <label class="nav__label" for="base_currency">Base currency</label>
+                                <select name="base_currency" id="base_currency" class="nav__select" data-action="change-base-currency">
+                                    <option value="USD" selected="selected">USD - US dollar</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                    <option value="JPY">JPY - Japanese yen</option>
+                                    <option value="GBP">GBP - Pound sterling</option>
+                                    <option value="PLN">PLN - Polish zloty</option>
+                                    <option value="SEK">SEK - Swedish krona</option>
+                                    <option value="CHF">CHF - Swiss franc</option>
+                                    <option value="RUB">RUB - Russian rouble</option>
+                                    <option value="AUD">AUD - Australian dollar</option>
+                                    <option value="BRL">BRL - Brazilian real</option>
+                                    <option value="CAD">CAD - Canadian dollar</option>
+                                    <option value="CNY">CNY - Chinese yuan renminbi</option>
+                                    <option value="HKD">HKD - Hong Kong dollar</option>
+                                    <option value="INR">INR - Indian rupee</option>
+                                    <option value="MXN">MXN - Mexican peso</option>
+                                    <option value="PHP">PHP - Philippine peso</option>
+                                    <option value="SGD">SGD - Singapore dollar</option>
+                                    <option value="ZAR">ZAR - South African rand</option>
+                                </select>
+                            </div>
+
+                        </form>
+                        <form>
+                            <div class="nav__form-group">
+                                <label class="nav__label" for="base_language">Base Language</label>
+                                <select name="locale" id="base_language" class="nav__select">
+                                    <option value="en" selected="">English</option><option value="de_DE">Deutch</option><option value="fr">French</option><option value="es">Español</option><option value="it">Italiano</option><option value="pl">Polski</option><option value="hu_HU">Magyar</option><option value="sv_SE">Swedish</option><option value="cs">Česky</option><option value="tr">Türkçe</option><option value="ru">Русский</option><option value="br">Português</option><option value="id">Indonesia</option><option value="ms_MY">Malay (Malaysia)</option><option value="th_TH">ภาษาไทย</option><option value="vi_VN">Tiếng Việt</option><option value="ja">日本語</option><option value="kr">한국어</option><option value="zh_CN">简体中文</option><option value="zh_TW">繁體中文</option><option value="ar_AE">العَرَبِيَّة‎‎</option><option value="he_IL">‏עברית‏</option><option value="fa_IR">فارسی</option>
+                                </select>
+                            </div>
+                        </form>
+                        <form>
+                            <div class="nav__form-group">
+                                <label class="nav__label" for="data_source">Data Source</label>
+                                <select name="base_currency" id="data_source" class="nav__select" >
+                                    <option>-- Select Data Source --</option>
+                                    <option value="HITBTC" selected="selected">HITBTC</option>
+                                    <option value="BITFINEX">BITFINEX</option>
+                                    <option value="BITFLYER">BITFLYER</option>
+                                    <option value="BITSTAMP">BITSTAMP</option>
+                                    <option value="BITTREX">BITTREX</option>
+                                    <option value="BINANCE">BINANCE</option>
+                                    <option value="COINBASE">COINBASE</option>
+
+                                    <option value="POLONIEX">POLONIEX</option>
+                                </select>
+                            </div>
+                        </form>
+                        <form>
+                            <div class="nav__form-group">
+                                <label class="nav__label" for="time_zone">TimeZone</label>
+                                <select name="timezone" id="time_zone" class="nav__select"><option value="Etc/UTC">UTC</option><option value="exchange">Exchange</option><option value="Pacific/Honolulu">(UTC-10) Honolulu</option><option value="America/Los_Angeles">(UTC-8) Los Angeles</option><option value="America/Vancouver">(UTC-8) Vancouver</option><option value="America/Phoenix">(UTC-7) Phoenix</option><option value="America/Chicago">(UTC-6) Chicago</option><option value="America/Mexico_City">(UTC-6) Mexico City</option><option value="America/El_Salvador">(UTC-6) San Salvador</option><option value="America/Bogota">(UTC-5) Bogota</option><option value="America/New_York">(UTC-5) New York</option><option value="America/Toronto">(UTC-5) Toronto</option><option value="America/Caracas">(UTC-4) Caracas</option><option value="America/Argentina/Buenos_Aires">(UTC-3) Buenos Aires</option><option value="America/Sao_Paulo">(UTC-2) Sao Paulo</option><option value="Europe/London">(UTC) London</option><option value="Europe/Belgrade">(UTC+1) Belgrade</option><option value="Europe/Berlin">(UTC+1) Berlin</option><option value="Europe/Luxembourg">(UTC+1) Luxembourg</option><option value="Europe/Madrid">(UTC+1) Madrid</option><option value="Europe/Paris">(UTC+1) Paris</option><option value="Europe/Rome">(UTC+1) Rome</option><option value="Europe/Warsaw">(UTC+1) Warsaw</option><option value="Europe/Zurich">(UTC+1) Zurich</option><option value="Europe/Athens">(UTC+2) Athens</option><option value="Africa/Cairo">(UTC+2) Cairo</option><option value="Asia/Jerusalem">(UTC+2) Jerusalem</option><option value="Europe/Istanbul">(UTC+3) Istanbul</option><option value="Asia/Kuwait">(UTC+3) Kuwait</option><option value="Europe/Moscow">(UTC+3) Moscow</option><option value="Asia/Qatar">(UTC+3) Qatar</option><option value="Asia/Riyadh">(UTC+3) Riyadh</option><option value="Asia/Tehran">(UTC+3:30) Tehran</option><option value="Asia/Dubai">(UTC+4) Dubai</option><option value="Asia/Muscat">(UTC+4) Muscat</option><option value="Asia/Ashkhabad">(UTC+5) Ashkhabad</option><option value="Asia/Kolkata">(UTC+5:30) Kolkata</option><option value="Asia/Almaty">(UTC+6) Almaty</option><option value="Asia/Bangkok">(UTC+7) Bangkok</option><option value="Asia/Chongqing">(UTC+8) Chongqing</option><option value="Asia/Hong_Kong">(UTC+8) Hong Kong</option><option value="Asia/Shanghai">(UTC+8) Shanghai</option><option value="Asia/Singapore">(UTC+8) Singapore</option><option value="Asia/Taipei">(UTC+8) Taipei</option><option value="Asia/Seoul">(UTC+9) Seoul</option><option value="Asia/Tokyo">(UTC+9) Tokyo</option><option value="Australia/Brisbane">(UTC+10) Brisbane</option><option value="Australia/Adelaide">(UTC+10:30) Adelaide</option><option value="Australia/Sydney">(UTC+11) Sydney</option><option value="Pacific/Auckland">(UTC+13) New Zealand</option><option value="Pacific/Fakaofo">(UTC+13) Tokelau</option><option value="Pacific/Chatham">(UTC+13:45) Chatham Islands</option></select>
+                            </div>
+                        </form>
+
+                        <ul class="nav__list">
+                            <li class="nav__item">
+                                <a class="nav__link" href="https://coinhodler.io" target="_blank">
+                                    <img class="nav__img" src="img/coinhodler.svg" width="21" height="21" alt="Coinhodler"/>
+                                    Coinhodler Portfolio
+                                </a>
+                                <a class="nav__link" href="https://www.coinbase.com/join/5362ad122fce19902a000007" target="_blank">
+                                    <img class="nav__img nav__img--coinbase" src="img/coinbase.svg" width="18" height="18" alt="Coinbase"/>
+                                    Buy coins with USD
+                                </a>
+                            </li>
+                        </ul>
+
+                    </div>
+                    <div class="nav__footer">
+                        <a class="nav__button button button--green button--full button--medium exchange-button">
+                            <img class="button__img" src="img/exchange.svg" width="10" height="13" alt="Coinraiting Instant Exchange"/>
+                            Exchange
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="coin-page__profile">
+        <div class="coin-page__price"><span class="coin-page__profile-img sprite  small_coin_logo" ></span></div>
+        <div class="coin-page__price"><span class="coin-page__price-sign">$</span><span class="coin-page__price-number"></span></div>
+        <div class="coin-page__exchange"><a class="button button--green button--medium exchange-button">
+            <img class="button__img" src="img/exchange.svg" width="10" height="13" alt="Coinraiting Instant Exchange">
+            Exchange BTC
+        </a>
+        </div>
+    </div>
+    <div class="coin-page__chart-holder">
+        <div class="coin-page__wrapper">
+            <span class="coin-page__title-change"><span class="coin-perc"></span>%<img class="coin-page__title-change-icon " src="" width="5" height="7"></span>
+            <h1 class="coin-page__title">
+                <span class="coin-price-title"></span>
+                <svg class="coin-page__title-spinner coin-page__title-spinner--hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 21" width="21" height="21">
+                    <g fill="none" stroke-width="3">
+                        <circle cx="10.5" cy="10.5" r="9" stroke="#7289a1"></circle>
+                        <path d="M19.5,10.5a9,9,0,0,0-9-9" stroke="#fff" transform="rotate(328.229 10.5 10.5)">
+                            <animateTransform attributeName="transform" type="rotate" from="0 10.5 10.5" to="360 10.5 10.5" dur="0.8s" repeatCount="indefinite"></animateTransform>
+                        </path>
+                    </g>
+                </svg>
+            </h1>
+        </div>
+
+        <div class="coin-page__chart-container">
+            <!-- TradingView Widget BEGIN -->
+            <div id="tv-medium-widget-a6153" class="trading-view-chart"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+            <script type="text/javascript">
+                $.post( "Module/Control/getCoinDataSource.php", { ticker: getURLParameter('ticker')+$('#base_currency').val(), currency: $('#base_currency').val(), coinId: getURLParameter('ticker')})
+                    .done(function( data ) {
+                        $returnResponse = jQuery.parseJSON(data);
+                        if($returnResponse.source == 'BINANCE'){
+                            $('#sub_base_currency').val($returnResponse.currency);
+                        }else{
+                            $('#sub_base_currency').val('');
+                        }
+                        $('#data_source').val($returnResponse.source).trigger('change');
+                        getWidget();
+                    });
+
+
+                $('#data_source').on('change', function(){
+                    getWidget();
+                });
+                $('#base_currency').on('change', function(){
+                    $.post( "Module/Control/getCoinDataSource.php", { ticker: getURLParameter('ticker')+$('#base_currency').val(), currency: $('#base_currency').val(), coinId: getURLParameter('ticker')})
+                        .done(function( data ) {
+                            $returnResponse = jQuery.parseJSON(data);
+                            $('#sub_base_currency').val('');
+                            $('#data_source').val($returnResponse.source).trigger('change');
+                            getWidget();
+                        });
+                });
+                $('#time_zone').on('change', function(){
+                    getWidget();
+                });
+                $('#base_language').on('change', function(){
+                    getWidget();
+                });
+                function getWidget(){
+                    $coin = getURLParameter('ticker');
+                    if($('#sub_base_currency').val() != ''){
+                        $currency = $('#sub_base_currency').val();
+                    }else{
+                        $currency = $('#base_currency').val();
+                    }
+
+                    $coinBase = $coin+$currency;
+                    $source = $('#data_source').val();
+                    $timeZone = $('#time_zone').val();
+                    $locale = $('#base_language').val();
+                    $td = new TradingView.widget({
+                        "container_id": "tv-medium-widget-a6153",
+                        "autosize": true,
+                        "symbol": $source+":"+$coinBase,
+                        "interval": "D",
+                        "timezone": "Etc/UTC",
+                        "theme": "Dark",
+                        "style": "1",
+                        "locale": $locale,
+                        "toolbar_bg": "#f1f3f6",
+                        "enable_publishing": false,
+                        "withdateranges": true,
+                        "hide_side_toolbar": false,
+                        "allow_symbol_change": true,
+                        "details": true,
+                        "hotlist": true,
+                        "calendar": true,
+                        "news": [
+                            "stocktwits",
+                            "headlines"
+                        ],
+                        "hideideas": true,
+                        "show_popup_button": true,
+                        "popup_width": "1000",
+                        "popup_height": "650"
+                    });
+
+
+                }
+
+            </script>
+            <!-- TradingView Widget END -->
+
+        </div>
+
+
+    </div>
+    <div class="coin-page__details">
+        <div class="coin-page__details__wrapper">
+            <div class="coin-page__points coin-page__points--center">
+                <div class="coin-page__point">
+                    <div class="coin-page__attr coin-page__attr--last">
+                        <div class="coin-page__attr-label coin-page__attr-label--inline">Rank</div>                        <div class="coin-page__attr-rank"></div>
+                    </div>
+                </div>
+                <div class="coin-page__point">
+                    <div class="coin-page__attr">
+                        <div class="coin-page__attr-label">Market cap</div>
+                        <div class="coin-page__attr-value"><span class="coin-page__attr-value-sign">$</span><span class="coin-page__attr-value-number page-attr-marketcap"></span></div>
+                    </div>
+                    <div class="coin-page__attr">
+                        <div class="coin-page__attr-label">Circulating supply</div>
+                        <div class="coin-page__attr-value"><span class="coin-page__attr-value-number page-attr-circulating-supply"></span><span class="coin-page__attr-value-symbol page-attr-circulating-supply-symbol"></span></div>
+                    </div>
+                </div>
+                <div class="coin-page__point">
+                    <div class="coin-page__attr">
+                        <div class="coin-page__attr-label">24H volume</div>
+                        <div class="coin-page__attr-value"><span class="coin-page__attr-value-sign">$</span><span class="coin-page__attr-value-number page-attr-24-volume"></span></div>
+                    </div>
+                    <div class="coin-page__attr">
+                        <div class="coin-page__attr-label">Total supply</div>
+                        <div class="coin-page__attr-value"><span class="coin-page__attr-value-number page-attr-total-supply">21,000,000</span><span class="coin-page__attr-value-symbol page-attr-total-supply-symbol"></span></div>
+                    </div>
+                </div>
+                <div class="coin-page__point coin-page__point--first-on-mobile">
+                    <div class="coin-page__attr slider-iframe-container">
+
+                    </div>
+                </div>
+            </div>
+            <div class="coin-page__points">
+                <div class="coin-page__point">
+                    <div class="coin-page__attr">
+                        <div class="coin-page__block">
+                            <div class="coin-page__split">
+                                <div class="coin-page__split-item">
+                                    <div class="coin-page__attr-label">What is Bitcoin?</div>
+                                    <div class="coin-page__block-content">
+                                        <p class="coin-page__description">Bitcoin is the first decentralized digital currency that can be sent through the internet globally without using financial institutions like banks. The network is controlled by many of its users, instead of a few entities.</p>
+                                    </div>
+                                </div>
+                                <div class="coin-page__split-item coin-page__split-item--no-wrap">
+                                    <div class="coin-page__link">
+                                        <a class="button button--ghost button--blue-border" target="_blank" href="https://bitcoin.org">
+                                            Visit website
+                                            <svg class="button__icon button__icon--right" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+                                                <path d="M6.5,5V6.5a1,1,0,0,1-1,1h-4a1,1,0,0,1-1-1v-4a1,1,0,0,1,1-1h2" style="fill:none;stroke-linecap:round;stroke-miterlimit:10"></path>
+                                                <line x1="3.5" y1="4.5" x2="6" y2="2" style="fill:none;stroke-linecap:round;stroke-miterlimit:10"></line>
+                                                <polygon class="fill" points="7.5 3 7.5 0.5 5 0.5 7.5 3" style="stroke-linecap:round;stroke-linejoin:round"></polygon>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="coin-page__point">
+                    <div class="coin-page__attr">
+                        <div class="coin-page__block coin-page__block--no-wrap coin-page__block--mobile-center">
+                            <div class="coin-page__attr-label">Exchange Bitcoin</div>
+                            <div class="coin-page__block-content">
+                                <div class="inline-buttons">
+                                    <a class="button button--ghost button--green-border exchange-button">
+                                        <svg class="button__icon" xmlns="http://www.w3.org/2000/svg" width="10" height="12" viewBox="0 0 10 12">
+                                            <line x1="1" y1="3" x2="7" y2="3" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:1.5px"></line>
+                                            <polyline points="6.5 0.5 9 3 6.5 5.5" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.5px"></polyline>
+                                            <line x1="9" y1="9" x2="2" y2="9" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:1.5px"></line>
+                                            <polyline points="3.5 11.5 1 9 3.5 6.5" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.5px"></polyline>
+                                        </svg>
+                                        <span class="buy-coin-button"></span>
+                                    </a>
+                                    <a class="button button--ghost button--red-border exchange-button">
+                                        <svg class="button__icon" xmlns="http://www.w3.org/2000/svg" width="10" height="12" viewBox="0 0 10 12">
+                                            <line x1="1" y1="3" x2="7" y2="3" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:1.5px"></line>
+                                            <polyline points="6.5 0.5 9 3 6.5 5.5" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.5px"></polyline>
+                                            <line x1="9" y1="9" x2="2" y2="9" style="fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:1.5px"></line>
+                                            <polyline points="3.5 11.5 1 9 3.5 6.5" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.5px"></polyline>
+                                        </svg>
+                                        <span class="sell-coin-button"></span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tooltip" style="opacity: 0; left: 777.5px; top: 222px;">
+        <div class="tooltip__title">12 Jan, 2018 0:47</div>
+        <div class="tooltip__body">$ 14,218.09</div>
+    </div>
+    <div class="tooltip-cursor" style="opacity: 0; top: 264px; height: 300px; left: 838px;"></div>
+    <div class="tooltip-point" style="opacity: 0; left: 835px; top: 413.5px;"></div>
+</div>
+<div class="frame__row display-none">
+    <div class="footer">
+        <div class="footer__left">
+            <a class="footer__contact" target="_blank" href="support@coinrating.com">Support</a>
+            <a class="footer__contact" target="_blank" href="support@coinrating.com">Advertise</a>
+            <a class="footer__contact" target="_blank" href="https://twitter.com/coinrating">Twitter</a>
+            <a class="footer__contact" target="_blank" href="Coinrating-Terms-and-Conditions.pdf">Terms & Conditions</a>
+        </div>
+        <div class="footer__right">
+            <a class="footer__back-to-top" data-action="coin-list--back-to-top" href="#">
+                <svg class="footer__back-to-top__icon" xmlns="http://www.w3.org/2000/svg" width="14" height="8" viewBox="0 0 14 8">
+                    <path fill="none" stroke="#6f7483" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 7l6-6 6 6"></path>
+                </svg>
+                Back to top
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- CHAT ROOM -->
+<div class="chat-container chat-container-collapse display-none" >
+    <div class="chat-toggle" style="cursor: pointer;">
+        <div class="panel-heading chat-room-header" id="accordion">
+            <i class="fa fa-wechat"></i> Chat
+            <div class="btn-group pull-right">
+                <a data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne">
+                    <i class="fa fa-angle-up toggle-icon"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="chat-iframe-container display-none">
+        <div class="col-md-12 nick-name-container text-center">
+            <h4>What is your nickname?</h4>
+
+            <div class="form-group user-nickname-container">
+                <input type="text" class="form-control" id="user-nickname">
+            </div>
+            <span class="nick-name-warning text-danger display-none" style="margin-top: 10px;">please enter nickname</span>
+            <br>
+            <button class="btn btn-primary" id="connect-to-chat-btn">Connect</button>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- END CHAT ROOM -->
+<script type="text/javascript" src="js/index.js"></script>
+<script type="text/javascript" src="js/numerals.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $('.buy-coin-button').text('BUY '+ getURLParameter('ticker'));
+        $('.sell-coin-button').text('SELL '+ getURLParameter('ticker'));
+        $('#connect-to-chat-btn').on('click', function(){
+            $nickname = $.trim($('#user-nickname').val());
+            if($nickname == ''){
+                $('.nick-name-warning').removeClass('display-none');
+                $('.user-nickname-container').addClass('has-error');
+            }else{
+                $('.nick-name-container').html(
+                    '<h2><i class="fa fa-spinner fa-spin"></i></h2>'
+                )
+                setTimeout(function(){
+                    $('.chat-iframe-container').html(
+                        '<iframe src="http://localhost:3000?nickname='+$nickname+'&ticker='+getURLParameter('ticker')+'" class="chat-iframe" frameborder="0" scrolling="auto"></iframe>'
+                    );
+                }, 1500)
+            }
+
+        });
+        $('.chat-toggle').on('click', function(){
+
+            if($(this).find('.toggle-icon').hasClass('fa-angle-up') == true){
+                $('.chat-container').removeClass('chat-container-collapse').addClass('chat-container-toggle');
+                $('.chat-iframe-container').removeClass('display-none');
+                $(this).find('.toggle-icon').removeClass('fa-angle-up')
+                $(this).find('.toggle-icon').addClass('fa-angle-down')
+            }else{
+                $('.chat-container').removeClass('chat-container-toggle').addClass('chat-container-collapse');
+                setTimeout(function(){
+                    $('.chat-iframe-container').addClass('display-none');
+                }, 300)
+
+                $(this).find('.toggle-icon').removeClass('fa-angle-down')
+                $(this).find('.toggle-icon').addClass('fa-angle-up')
+            }
+        });
+
+        $url = 'http://coincap.io/page/'+getURLParameter('ticker');
+        getCoin($url).done(function(response){
+            $displayName = response.display_name;
+            $id = response.id;
+            $price = response.price.toLocaleString(undefined, {minimumFractionDigits: 2});
+            $cap24hrChange = response.cap24hrChange;
+            $rank = response.rank;
+            $marketCap = response.market_cap;
+            $volume = response.volume;
+            $supply = response.supply;
+
+            if($cap24hrChange >= 0){
+                $percClass = ' coin-page__title-change--positive';
+                $arrowSource = 'img/arrow-up-green.svg';
+                $arrowClass = ' coin-page__title-change-icon--up';
+            }else{
+                $percClass = ' coin-page__title-change--negative';
+                $arrowSource = 'img/arrow-down-red.svg';
+                $arrowClass = ' coin-page__title-change-icon--down';
+            }
+            $iconName = $displayName.toLowerCase().replace(/ /g, '');
+            $('.coin-page__icon-img').addClass('sprite-'+$iconName);
+            $('.coin-page__profile-img').addClass('sprite-'+$iconName);
+            $('.page_name').text($displayName);
+            $('.coin-page__symbol').text($id);
+            $('.coin-page__price-number').text($price);
+
+            $('.coin-price-title').text($displayName + ' price');
+            $('.coin-page__title-change').addClass($percClass).find('.coin-perc').text($cap24hrChange);
+            $('.coin-page__title-change-icon').addClass($arrowClass).attr('src', $arrowSource);
+
+            $('.page-attr-marketcap').text($marketCap.toLocaleString(undefined, {minimumFractionDigits: 0}));
+            $('.page-attr-24-volume').text($volume.toLocaleString(undefined, {minimumFractionDigits: 0}));
+            $('.page-attr-circulating-supply').text($supply.toLocaleString(undefined, {minimumFractionDigits: 0}));
+            $('.page-attr-circulating-supply-symbol').text($id);
+            $('.page-attr-total-supply').text($supply.toLocaleString(undefined, {minimumFractionDigits: 0}));
+            $('.page-attr-total-supply-symbol').text($id);
+            $('.coin-page__attr-rank').text($rank);
+
+
+
+
+
+            // Exchange Function
+            $.getJSON( "https://shapeshift.io/getcoins", function( data ) {
+                $coinOptions = '';
+                $.each(data, function(key, value){
+                    if(value.status == 'available'){
+                        $coinOptions += '<div class="select_coin_button_specific select_this_coin" data-name="'+value.name+'"><img class="coin_icon" src="'+value.imageSmall+'">'+value.symbol+'</div>'
+                    }
+                });
+
+                $('.select_coin_button_window').html($coinOptions);
+
+                $('.select_this_coin').on('click', function(){
+                    $selectCoin = $.trim($(this).text());
+                    $currentCoinPay = $.trim($('.select_coin_window_text:eq(0)').text());
+                    $currentCoinLogoPay = $('.current_selected_coin_img:eq(0)').attr('src');
+                    $currentCoinNamePay = $('.select_coin_button:eq(0)').attr('data-name');
+                    $currentCoinBuy = $.trim($('.select_coin_window_text:eq(1)').text());
+                    $currentCoinLogoBuy = $('.current_selected_coin_img:eq(1)').attr('src');
+                    $currentCoinNameBuy = $('.select_coin_button:eq(1)').attr('data-name');
+                    $selectImage = $(this).find('img').attr('src');
+                    $action =  $(this).parent().parent().attr('data-action');
+                    $coinName = $(this).attr('data-name');
+
+                    $('.trade_modal_deposit_data_value_min_amount').text('');
+                    $('.trade_modal_deposit_data_value_min_coin').text('');
+
+                    $('.trade_modal_deposit_data_value_max_amount').text('');
+                    $('.trade_modal_deposit_data_value_max_coin').text('');
+
+                    $('.trade_modal_deposit_data_value_fee_amount').text('');
+                    $('.trade_modal_deposit_data_value_fee_coin').text('');
+
+
+                    $('.trade_modal_conversion_rate').html('Getting Market Data <i class="fa fa-circle-o-notch fa-spin"></i>');
+
+
+                    if($action == 'buy'){
+                        if($selectCoin == $currentCoinPay){
+                            $('.select_coin_window_text:eq(1)').text($selectCoin);
+                            $('.current_selected_coin_img:eq(1)').attr('src', $currentCoinLogoPay);
+                            $('.select_coin_button:eq(1)').attr('data-name', $currentCoinNamePay);
+                            $('.select_coin_window_text:eq(0)').text($currentCoinBuy);
+                            $('.current_selected_coin_img:eq(0)').attr('src', $currentCoinLogoBuy);
+                            $('.select_coin_button:eq(0)').attr('data-name', $currentCoinNameBuy);
+                        }else{
+                            $(this).parent().parent().find('.current_selected_coin_img').attr('src', $selectImage);
+                            $(this).parent().parent().find('.select_coin_window_text').text($selectCoin);
+                            $(this).parent().parent().attr('data-name', $coinName);
+                        }
+
+                        $('.trade_modal_bottom_shift_button').text('Buy '+ $selectCoin);
+                        $('.trade_buy_address').text($selectCoin + ' Address');
+                        $('.trade_buy_amount').text($selectCoin + ' Amount (optional)');
+                    }else{
+                        if($selectCoin == $currentCoinBuy){
+                            $('.select_coin_window_text:eq(0)').text($selectCoin);
+                            $('.current_selected_coin_img:eq(0)').attr('src', $currentCoinLogoBuy);
+                            $('.select_coin_button:eq(0)').attr('data-name', $currentCoinNameBuy);
+                            $('.select_coin_window_text:eq(1)').text($currentCoinPay);
+                            $('.current_selected_coin_img:eq(1)').attr('src', $currentCoinLogoPay);
+                            $('.select_coin_button:eq(1)').attr('data-name', $currentCoinNamePay);
+
+
+                            $('.trade_modal_bottom_shift_button').text('Buy '+ $currentCoinPay);
+                            $('.trade_buy_address').text($currentCoinPay + ' Address');
+                            $('.trade_buy_amount').text($currentCoinPay + ' Amount (optional)');
+                        }else{
+                            $(this).parent().parent().find('.current_selected_coin_img').attr('src', $selectImage);
+                            $(this).parent().parent().find('.select_coin_window_text').text($selectCoin);
+                            $(this).parent().parent().attr('data-name', $coinName);
+                        }
+                    }
+
+
+                    $currentCoinPay = $.trim($('.select_coin_window_text:eq(0)').text());
+                    $currentCoinBuy = $.trim($('.select_coin_window_text:eq(1)').text());
+
+                    $.getJSON( "https://shapeshift.io/marketinfo/"+$currentCoinPay+"_"+$currentCoinBuy, function( data ) {
+                        $limit = data.limit;
+                        $maxLimit = data.maxLimit;
+                        $minimum = data.minimum;
+                        $minerFee = data.minerFee;
+                        $rate = data.rate;
+                        $pair = data.pair.split('_');
+                        $pay = $pair[0];
+                        $buy = $pair[1];
+
+                        $('.trade_modal_deposit_data_value_min_amount').text($minimum);
+                        $('.trade_modal_deposit_data_value_min_coin').text($pay);
+
+                        $('.trade_modal_deposit_data_value_max_amount').text($maxLimit);
+                        $('.trade_modal_deposit_data_value_max_coin').text($pay);
+
+                        $('.trade_modal_deposit_data_value_fee_amount').text($minerFee);
+                        $('.trade_modal_deposit_data_value_fee_coin').text($buy);
+
+
+                        $('.trade_modal_conversion_rate').text(1 + ' '+$pay+ ' = ' + $rate + ' ' + $buy);
+                    });
+
+                });
+
+            });
+
+
+            var socket = io.connect('http://socket.coincap.io');
+            socket.on('trades', function (tradeMsg) {
+                $.each(tradeMsg, function(){
+                    $long = tradeMsg.msg.long;
+                    $short = tradeMsg.msg.short;
+                    $mktcap = tradeMsg.msg.mktcap.toLocaleString(undefined, {minimumFractionDigits: 0});
+                    $price = tradeMsg.msg.price.toLocaleString(undefined, {minimumFractionDigits: 2});
+                    $rawPrice = tradeMsg.msg.price;
+                    $perc = tradeMsg.msg.perc;
+                    if($perc >= 0){
+                        $percClass = ' coin-page__title-change--positive';
+                        $removePercClass = 'coin-page__title-change--negative';
+                        $arrowSource = 'img/arrow-up-green.svg';
+                        $arrowClass = ' coin-page__title-change-icon--up';
+                        $removeArrowClass = ' coin-page__title-change-icon--down';
+
+                    }else{
+                        $percClass = ' coin-page__title-change--negative';
+                        $removePercClass = 'coin-page__title-change--positive';
+                        $arrowSource = 'img/arrow-down-red.svg';
+                        $arrowClass = ' coin-page__title-change-icon--down';
+                        $removeArrowClass = ' coin-page__title-change-icon--up';
+                    }
+
+                    if($short == $id){
+
+                        $('.coin-page__price-number').text($price);
+                        $('.coin-page__title-change').removeClass($removePercClass).addClass($percClass).find('.coin-perc').text($perc);
+                        $('.coin-page__title-change-icon').removeClass($removeArrowClass).addClass($arrowClass).attr('src', $arrowSource);
+                    }
+                });
+            });
+
+
+
+
+            $.post( "revolution/rev.php", { ticker: getURLParameter('ticker') })
+                .done(function( data ) {
+                    $response = jQuery.parseJSON( data );
+                    if($response.bol == true){
+                        $('.slider-iframe-container').html($response.iframe);
+                    }
+                });
+            // on content load
+
+            $('.splash-screen').css('opacity', 0);
+            setTimeout(function(){
+                $('.frame__row').removeClass('display-none');
+                $('.coin-page').removeClass('display-none');
+                $('.chat-container').removeClass('display-none');
+                $('.splash-screen').addClass('display-none');
+            }, 400)
+
+        });
+
+
+        // Buy & Sell
+        $('.select_coin_button').on('click', function(){
+            $type = $(this).data('action');
+            $display = $(this).find('.select_coin_button_window').css('display');
+            if($display == 'none'){
+                $(this).find('.select_coin_button_window').css('display', 'block');
+            }else{
+                $(this).find('.select_coin_button_window').css('display', 'none');
+            }
+        });
+
+
+        $('.exchange-button').on('click', function(){
+            $('*, *:after, *:before').css('-moz-box-sizing', 'border-box');
+            $('*, *:after, *:before').css('box-sizing', 'border-box');
+            $('.trade_modal').css('display', 'block');
+            $currentCoinPay = $.trim($('.select_coin_window_text:eq(0)').text());
+            $currentCoinBuy = $.trim($('.select_coin_window_text:eq(1)').text());
+
+            var coinPairInterval = setInterval(function(){
+                $.getJSON( "https://shapeshift.io/marketinfo/"+$currentCoinPay+"_"+$currentCoinBuy, function( data ) {
+                    $limit = data.limit;
+                    $maxLimit = data.maxLimit;
+                    $minimum = data.minimum;
+                    $minerFee = data.minerFee;
+                    $rate = data.rate;
+                    $tradePair = data.pair;
+                    $pair = data.pair.split('_');
+                    $pay = $pair[0];
+                    $buy = $pair[1];
+
+                    $('.trade_modal_deposit_data_value_min_amount').text($minimum);
+                    $('.trade_modal_deposit_data_value_min_coin').text($pay);
+
+                    $('.trade_modal_deposit_data_value_max_amount').text($maxLimit);
+                    $('.trade_modal_deposit_data_value_max_coin').text($pay);
+
+                    $('.trade_modal_deposit_data_value_fee_amount').text($minerFee);
+                    $('.trade_modal_deposit_data_value_fee_coin').text($buy);
+
+
+                    $('.trade_modal_conversion_rate').text(1 + ' '+$pay+ ' = ' + $rate + ' ' + $buy);
+                });
+            }, 1000);
+
+
+
+            $('.trade_modal_bottom_close_button').on('click', function(){
+                $('.trade_modal').css('display', 'none');
+                clearInterval(coinPairInterval);
+            });;
+
+            $('.trade_modal_bottom_shift_button').on('click', function(){
+                $buttonText = $(this).text();
+                $(this).html('<i class="fa fa-spinner fa-spin"></i>');
+                $payAmount = $('.pay_amount_input').val();
+                $payAddress = $.trim($('.pay_address_input').val());
+                $refundAddress = $('.pay_refund_address_input').val();
+
+                if($payAddress == ''){
+                    $(this).html($buttonText);
+                    alert('No Withdrawal Address specified.');
+                    return false;
+                }
+                /*
+                 if($payAmount != ''){
+                 if(parseFloat($payAmount) < $minimum){
+                 alert('The amount you want to receive is lower than our limit of ' + $minimum + ' ' + $pay);
+                 return false;
+                 }
+                 if(parseFloat($payAmount) > $maxLimit){
+                 alert('The amount you want to receive is higher than our max limit of ' + $maxLimit + ' ' + $pay);
+                 return false;
+                 }
+                 }
+                 */
+                $post = {
+                    amount: $payAmount,
+                    pair: $tradePair,
+                    withdrawalAddress: $payAddress,
+                    refundAddress: $refundAddress
+                };
+
+
+                $.post( "Module/Control/trade.php?action=sendAmount", $post)
+                    .done(function( data ) {
+                        $response = jQuery.parseJSON(data);
+                        console.log($response);
+                        if(typeof $response['success'] != 'undefined'){
+                            $coinSelectedPay = $('.select_coin_button:eq(0)').attr('data-name');
+                            $coinSymbolPay = $('.select_coin_button:eq(0)').find('.select_coin_window_text').text();
+                            $coinSelectedBuy = $('.select_coin_button:eq(1)').attr('data-name');
+                            $coinSymbolBuy = $('.select_coin_button:eq(1)').find('.select_coin_window_text').text();
+                            $coinIcon = $('.select_coin_button:eq(0)').find('.current_selected_coin_img').attr('src');
+
+                            $quotedRate = $response['success']['quotedRate'];
+                            $withdrawalAmount = $response['success']['withdrawalAmount'];
+                            $orderId = $response['success']['orderId'];
+                            $pair = $response['success']['pair'];
+                            $withdrawalAddress = $('.pay_address_input').val();
+                            $refundAddress = $('.pay_refund_address_input').val();
+
+                            $sessionData = {
+                                coinSelectedPay: $coinSelectedPay,
+                                coinSymbolPay: $coinSymbolPay,
+                                coinSelectedBuy: $coinSelectedBuy,
+                                coinSymbolBuy: $coinSymbolBuy,
+                                coinIcon: encodeURIComponent($coinIcon),
+                                quotedRate: $quotedRate,
+                                withdrawalAmount: $withdrawalAmount,
+                                withdrawalAddress: $withdrawalAddress,
+                                refundAddress: $refundAddress,
+                                orderId: $orderId,
+                                pair: $pair,
+                                action: 'post'
+                            };
+
+                            $.post("Module/Control/transaction.php", $sessionData).done(function(){
+                                location.href = "trade.html"
+                            });
+
+                        }else{
+                            $('.trade_modal_bottom_shift_button').text($buttonText);
+                            alert($response['error']);
+                        }
+                    });
+
+            });
+
+        });
+
+        //Announcement Interval
+        $announcements = [
+            {
+                title: 'Buy coins with USD', 'link': 'https://www.coinbase.com/join/5362ad122fce19902a000007'
+            },
+            {
+                title: 'Trade your coins easily', 'link': 'https://hitbtc.com/?ref_id=5a344dd04595a'
+            },
+            {
+                title: 'Follow us on twitter', 'link': 'https://twitter.com/coinrating'
+            },
+        ];
+        $interval = 0;
+        setInterval(function(){
+            $('.announcement__message').find('a').text($announcements[$interval].title).attr('href', $announcements[$interval].link);
+            $interval++;
+            if($interval == 3){
+                $interval = 0;
+            }
+        }, 10000)
+    });
+</script>
+<script>
+    function isNumberKey(evt)
+    {
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+
+        if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 45){
+            return false;
+        }else{
+            return true;
+        }
+
+    }
+</script>
+
+</body>
